@@ -2,10 +2,17 @@ package com.example.velora.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Brand
+val VeloraPrimary = Color(0xFF5B4CF0)
+val VeloraOnPrimary = Color(0xFFFFFFFF)
+
+// Light
+val VeloraLightBg = Color(0xFFFAFAFF)
+val VeloraLightSurface = Color(0xFFFFFFFF)
+val VeloraLightOnBg = Color(0xFF12121A)
+
+// Dark
+val VeloraDarkBg = Color(0xFF0C0C12)
+val VeloraDarkSurface = Color(0xFF141420)
+val VeloraDarkOnBg = Color(0xFFF0F0FA)
