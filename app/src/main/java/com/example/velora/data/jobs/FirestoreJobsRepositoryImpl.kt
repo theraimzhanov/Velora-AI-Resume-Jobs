@@ -27,12 +27,12 @@ class FirestoreJobsRepositoryImpl(
         awaitClose { reg.remove() }
     }
 
-    override suspend fun add(uid: String, company: String, position: String) {
+    override suspend fun add(uid: String, company: String, position: String, status: String) {
         col(uid).add(
             mapOf(
                 "company" to company.trim(),
                 "position" to position.trim(),
-                "status" to "Applied",
+                "status" to status,
                 "createdAt" to System.currentTimeMillis()
             )
         ).await()
@@ -45,4 +45,5 @@ class FirestoreJobsRepositoryImpl(
     override suspend fun delete(uid: String, id: String) {
         col(uid).document(id).delete().await()
     }
+
 }

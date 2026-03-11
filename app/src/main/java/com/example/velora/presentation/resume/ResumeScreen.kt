@@ -1,51 +1,154 @@
 package com.example.velora.presentation.resume
 
-
+import android.provider.OpenableColumns
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.UploadFile
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.velora.presentation.ui.*
+import com.example.velora.presentation.ui.SoftBackground
+import com.example.velora.presentation.ui.SoftCard
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResumeScreen(vm: ResumeViewModel = hiltViewModel()) {
+fun ResumeScreen(
+    vm: ResumeViewModel = hiltViewModel()
+) {
     val ui by vm.ui.collectAsState()
+    val ctx = LocalContext.current
 
-    VeloraBackground {
-        Column(Modifier.fillMaxSize().padding(16.dp)) {
-            Text("Resume Checker", style = MaterialTheme.typography.headlineMedium)
-            Spacer(Modifier.height(10.dp))
+    val picker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            val name = queryName(ctx.contentResolver, uri)
+            vm.onFilePicked(uri, name)
+        }
+    }
 
-            VeloraCard(Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = ui.input,
-                    onValueChange = vm::setInput,
-                    label = { Text("Paste resume text") },
-                    modifier = Modifier.fillMaxWidth().height(220.dp),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
-                )
+    SoftBackground {
+        Box(Modifier.fillMaxSize()) {
 
-                Spacer(Modifier.height(12.dp))
-                VeloraButton(
-                    text = if (ui.loading) "Analyzing..." else "Analyze",
-                    enabled = !ui.loading && ui.input.isNotBlank()
-                ) { vm.analyze() }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 18.dp, vertical = 14.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
 
-                ui.error?.let { Spacer(Modifier.height(10.dp)); Text(it, color = MaterialTheme.colorScheme.error) }
+                item {
+                    SoftCard(Modifier.fillMaxWidth()) {
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Column(Modifier.weight(1f)) {
+                                Text("Resume Checker", style = MaterialTheme.typography.titleLarge)
+                                Spacer(Modifier.height(4.dp))
+                                Text(
+                                    "Upload a PDF resume and get strengths, weaknesses, ATS fixes.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+                                )
+                            }
+                            Icon(Icons.Rounded.Description, null)
+                        }
+
+                        Spacer(Modifier.height(14.dp))
+
+                        OutlinedTextField(
+                            value = ui.jobTarget,
+                            onValueChange = vm::setJobTarget,
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("Target role (optional)") }
+                        )
+
+                        Spacer(Modifier.height(12.dp))
+
+                        Button(
+                            onClick = { picker.launch(arrayOf("application/pdf")) },
+                            modifier = Modifier.fillMaxWidth().height(52.dp)
+                        ) {
+                            Icon(Icons.Rounded.UploadFile, null)
+                            Spacer(Modifier.width(10.dp))
+                            Text(if (ui.fileName == null) "Upload Resume (PDF)" else "Change File")
+                        }
+
+                        ui.fileName?.let {
+                            Spacer(Modifier.height(10.dp))
+                            Text("Selected: $it", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+                        }
+
+                        Spacer(Modifier.height(12.dp))
+
+                        Button(
+                            onClick = { vm.analyze(ctx.contentResolver) },
+                            enabled = ui.fileUri != null && !ui.loading,
+                            modifier = Modifier.fillMaxWidth().height(52.dp)
+                        ) { Text(if (ui.loading) "Analyzing…" else "Analyze Resume") }
+
+                        ui.error?.let {
+                            Spacer(Modifier.height(10.dp))
+                            Text(it, color = MaterialTheme.colorScheme.error)
+                        }
+                    }
+                }
+
+                ui.report?.let { report ->
+                    item {
+                        SoftCard(Modifier.fillMaxWidth()) {
+                            Text("Score", style = MaterialTheme.typography.titleMedium)
+                            Spacer(Modifier.height(8.dp))
+                            LinearProgressIndicator(
+                                progress = { (report.overallScore / 100f).coerceIn(0f, 1f) },
+                                modifier = Modifier.fillMaxWidth().height(8.dp)
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Text("${report.overallScore}/100 • ${report.headline}")
+                        }
+                    }
+
+                    item { SectionCard("Strengths", report.strengths) }
+                    item { SectionCard("Weaknesses", report.weaknesses) }
+                    item { SectionCard("Quick Fixes", report.quickFixes) }
+                    item { SectionCard("Keyword Gaps", report.keywordGaps) }
+                    item { SectionCard("ATS Notes", report.atsNotes) }
+
+                    item {
+                        SoftCard(Modifier.fillMaxWidth()) {
+                            Text("Suggested Summary", style = MaterialTheme.typography.titleMedium)
+                            Spacer(Modifier.height(8.dp))
+                            Text(report.suggestedSummary)
+                        }
+                    }
+
+                    item { Spacer(Modifier.height(90.dp)) }
+                }
             }
 
-            ui.result?.let { r ->
-                Spacer(Modifier.height(14.dp))
-                VeloraCard(Modifier.fillMaxWidth()) {
-                    Text("Score: ${r.score}/100", style = MaterialTheme.typography.titleLarge)
-                    Spacer(Modifier.height(10.dp))
-                    Section("Strengths", r.strengths)
-                    Spacer(Modifier.height(10.dp))
-                    Section("Issues", r.issues)
-                    Spacer(Modifier.height(10.dp))
-                    Section("Suggestions", r.suggestions)
+            AnimatedVisibility(visible = ui.loading) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f)
+                ) {
+                    Column(
+                        Modifier.fillMaxSize().padding(24.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
+                        Spacer(Modifier.height(12.dp))
+                        Text(ui.progressLabel ?: "Working…")
+                        Spacer(Modifier.height(10.dp))
+                        LinearProgressIndicator(Modifier.fillMaxWidth())
+                    }
                 }
             }
         }
@@ -53,8 +156,21 @@ fun ResumeScreen(vm: ResumeViewModel = hiltViewModel()) {
 }
 
 @Composable
-private fun Section(title: String, items: List<String>) {
-    Text(title, style = MaterialTheme.typography.titleMedium)
-    Spacer(Modifier.height(6.dp))
-    items.take(6).forEach { Text("• $it") }
+private fun SectionCard(title: String, items: List<String>) {
+    SoftCard(Modifier.fillMaxWidth()) {
+        Text(title, style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(10.dp))
+        items.take(8).forEach {
+            Text("• $it", style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(6.dp))
+        }
+    }
+}
+
+private fun queryName(cr: android.content.ContentResolver, uri: android.net.Uri): String? {
+    val c = cr.query(uri, null, null, null, null) ?: return null
+    return c.use {
+        val idx = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        if (it.moveToFirst() && idx >= 0) it.getString(idx) else null
+    }
 }

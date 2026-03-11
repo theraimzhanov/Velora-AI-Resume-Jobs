@@ -8,6 +8,7 @@ import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
 import com.example.velora.domain.auth.AuthState
 import com.example.velora.navigation.Destinations
@@ -27,9 +28,9 @@ fun AppScaffold(
     val nav = rememberNavController()
 
     val tabs = listOf(
-        Tab(Destinations.TRACKER, "Tracker") { Icon(Icons.Rounded.Work, null) },
+        Tab(Destinations.TRACKER, "Tracker") { Icon(Icons.Rounded.Home, null) },
         Tab(Destinations.RESUME, "Resume") { Icon(Icons.Rounded.Description, null) },
-        Tab(Destinations.PROFILE, "Profile") { Icon(Icons.Rounded.AccountCircle, null) },
+        Tab(Destinations.PROFILE, "Profile") { Icon(Icons.Rounded.Person, null) },
     )
 
     val currentRoute = nav.currentBackStackEntryAsState().value?.destination?.route ?: Destinations.TRACKER
@@ -65,13 +66,36 @@ fun AppScaffold(
             )
         },
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                tonalElevation = 0.dp,
+                windowInsets = NavigationBarDefaults.windowInsets
+            ) {
                 tabs.forEach { t ->
+                    val selected = currentRoute == t.route
+
                     NavigationBarItem(
-                        selected = currentRoute == t.route,
-                        onClick = { nav.navigate(t.route) { launchSingleTop = true } },
-                        icon = t.icon,
-                        label = { Text(t.label) }
+                        selected = selected,
+                        onClick = {
+                            nav.navigate(t.route) {
+                                launchSingleTop = true
+                                restoreState = true
+                                // keeps back stack clean
+                                popUpTo(nav.graph.startDestinationId) { saveState = true }
+                            }
+                        },
+                        icon = {
+                            // Icon-only look: slightly larger, nicer weight
+                            CompositionLocalProvider(LocalContentColor provides LocalContentColor.current) {
+                                t.icon()
+                            }
+                        },
+                        label = {},                  // ✅ no label
+                        alwaysShowLabel = false,      // ✅ hide text
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                            indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                        )
                     )
                 }
             }

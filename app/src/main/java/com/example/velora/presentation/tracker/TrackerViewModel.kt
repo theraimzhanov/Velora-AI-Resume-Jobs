@@ -44,12 +44,19 @@ class TrackerViewModel @Inject constructor(
         }
     }
 
-    fun add(company: String, position: String) {
-        val uid = _ui.value.uid ?: return
+    fun add(company: String, position: String, status: String) {
+        val uid = _ui.value.uid ?: run {
+            _ui.update { it.copy(error = "Please sign in first.") }
+            return
+        }
         val c = company.clean()
         val p = position.clean()
         if (c.isBlank() || p.isBlank()) return
-        viewModelScope.launch { repo.add(uid, c, p) }
+
+        viewModelScope.launch {
+            runCatching { repo.add(uid, c, p, status) }
+                .onFailure { e -> _ui.update { it.copy(error = e.message ?: "Could not add") } }
+        }
     }
 
     fun setStatus(id: String, status: String) {
