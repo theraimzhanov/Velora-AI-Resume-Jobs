@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -86,27 +87,50 @@ fun SoftIconButton(
 fun SoftListItem(
     title: String,
     subtitle: String,
-    leading: @Composable () -> Unit,
-    trailing: @Composable () -> Unit = {}
+    leading: @Composable (() -> Unit)? = null,
+    trailing: @Composable (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
 ) {
-    SoftCard(modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(14.dp)) {
-        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-            Box(
-                Modifier
-                    .size(44.dp)
-                    .background(Color(0xFFF1F0EC), RoundedCornerShape(999.dp)),
-                contentAlignment = androidx.compose.ui.Alignment.Center
-            ) { leading() }
-
-            Spacer(Modifier.width(12.dp))
-
-            Column(Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.height(2.dp))
-                Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = Color.Black.copy(alpha = 0.55f))
+    val content: @Composable () -> Unit = {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (leading != null) {
+                leading()
+                Spacer(Modifier.width(12.dp))
             }
 
-            trailing()
+            Column(modifier = Modifier.weight(1f)) {
+                Text(title, style = MaterialTheme.typography.titleMedium)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
+
+            if (trailing != null) {
+                Spacer(Modifier.width(12.dp))
+                trailing()
+            }
+        }
+    }
+
+    SoftCard(modifier = modifier) {
+        if (onClick != null) {
+            Surface(
+                onClick = onClick,
+                color = Color.Transparent
+            ) {
+                content()
+            }
+        } else {
+            content()
         }
     }
 }

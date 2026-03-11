@@ -1,20 +1,45 @@
 package com.example.velora.presentation.tracker
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.WorkOutline
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,6 +52,8 @@ import com.example.velora.presentation.ui.SoftCard
 import com.example.velora.presentation.ui.SoftChip
 import com.example.velora.presentation.ui.SoftListItem
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.draw.clip
 
 private val Filters = listOf("All") + ApplicationStatus.entries.map { it.label }
 
@@ -36,31 +63,43 @@ fun TrackerScreen(
     authState: AuthState,
     vm: TrackerViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(authState) { vm.bind(authState) }
+    LaunchedEffect(authState) {
+        vm.bind(authState)
+    }
+
     val ui by vm.ui.collectAsState()
 
     var selectedFilter by remember { mutableStateOf("All") }
+    var addSheetOpen by remember { mutableStateOf(false) }
+    var selectedJob by remember { mutableStateOf<JobApplication?>(null) }
+
+    val addSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val actionSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
 
     val jobs = remember(ui.jobs, selectedFilter) {
-        if (selectedFilter == "All") ui.jobs
-        else ui.jobs.filter { it.status.equals(selectedFilter, ignoreCase = true) }
+        if (selectedFilter == "All") {
+            ui.jobs
+        } else {
+            ui.jobs.filter { it.status.equals(selectedFilter, ignoreCase = true) }
+        }
     }
-
-    // Bottom sheet
-    var sheetOpen by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
 
     SoftBackground {
         Scaffold(
             containerColor = Color.Transparent,
-            floatingActionButtonPosition = FabPosition.End, // ✅ corner
+            floatingActionButtonPosition = FabPosition.End,
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { sheetOpen = true },
+                    onClick = { addSheetOpen = true },
                     containerColor = Color(0xFF2D63FF),
                     contentColor = Color.White
-                ) { Icon(Icons.Rounded.Add, contentDescription = "Add") }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = "Add application"
+                    )
+                }
             }
         ) { padding ->
 
@@ -71,17 +110,18 @@ fun TrackerScreen(
                     .padding(horizontal = 18.dp, vertical = 14.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-
-                // ===== Compact hero card =====
                 item {
                     CompactHeroCard(
                         total = ui.jobs.size,
-                        interviews = ui.jobs.count { it.status == ApplicationStatus.Interview.label },
-                        offers = ui.jobs.count { it.status == ApplicationStatus.Offer.label }
+                        interviews = ui.jobs.count {
+                            it.status.equals(ApplicationStatus.Interview.label, ignoreCase = true)
+                        },
+                        offers = ui.jobs.count {
+                            it.status.equals(ApplicationStatus.Offer.label, ignoreCase = true)
+                        }
                     )
                 }
 
-                // ===== Chips (horizontal scroll like pills) =====
                 item {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         items(Filters) { label ->
@@ -94,11 +134,10 @@ fun TrackerScreen(
                     }
                 }
 
-                // ===== Section title =====
                 item {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            "Applications",
+                            text = "Applications",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.weight(1f)
@@ -110,78 +149,148 @@ fun TrackerScreen(
                     }
                 }
 
-                // ===== Errors =====
                 ui.error?.let { err ->
-                    item { Text(err, color = MaterialTheme.colorScheme.error) }
+                    item {
+                        Text(
+                            text = err,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
 
-                // ===== Content =====
                 when {
                     ui.loading -> {
-                        items(4) { TrackerSkeletonRow() }
+                        items(4) {
+                            TrackerSkeletonRow()
+                        }
                     }
 
                     jobs.isEmpty() -> {
                         item {
-                            SoftCard(Modifier.fillMaxWidth()) {
+                            SoftCard(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
                                 Text(
-                                    if (selectedFilter == "All") "No applications yet"
-                                    else "No $selectedFilter applications",
+                                    text = if (selectedFilter == "All") {
+                                        "No applications yet"
+                                    } else {
+                                        "No $selectedFilter applications"
+                                    },
                                     style = MaterialTheme.typography.titleMedium
                                 )
-                                Spacer(Modifier.height(6.dp))
+
+                                Spacer(modifier = Modifier.height(6.dp))
+
                                 Text(
-                                    if (selectedFilter == "All")
+                                    text = if (selectedFilter == "All") {
                                         "Tap + to add your first application."
-                                    else
-                                        "Switch to All to see everything or add a new one.",
+                                    } else {
+                                        "Switch to All to see everything or add a new one."
+                                    },
                                     color = Color.Black.copy(alpha = 0.55f)
                                 )
 
                                 if (selectedFilter != "All") {
-                                    Spacer(Modifier.height(12.dp))
+                                    Spacer(modifier = Modifier.height(12.dp))
+
                                     Button(
                                         onClick = { selectedFilter = "All" },
                                         shape = RoundedCornerShape(14.dp),
                                         modifier = Modifier.fillMaxWidth()
-                                    ) { Text("Show All") }
+                                    ) {
+                                        Text("Show All")
+                                    }
                                 }
                             }
                         }
                     }
 
                     else -> {
-                        items(jobs, key = { it.id }) { job ->
-                            JobRow(job)
+                        items(
+                            items = jobs,
+                            key = { it.id }
+                        ) { job ->
+                            JobRow(
+                                job = job,
+                                onClick = {
+                                    selectedJob = job
+                                }
+                            )
                         }
-                        item { Spacer(Modifier.height(80.dp)) }
+
+                        item {
+                            Spacer(modifier = Modifier.height(80.dp))
+                        }
                     }
                 }
             }
         }
     }
 
-    // ===== Add Sheet =====
-    if (sheetOpen) {
+    if (addSheetOpen) {
         ModalBottomSheet(
-            onDismissRequest = { sheetOpen = false },
-            sheetState = sheetState
+            onDismissRequest = { addSheetOpen = false },
+            sheetState = addSheetState
         ) {
             AddApplicationSheet(
                 onAdd = { company, position, status ->
-                    // ✅ after add, show list (avoid filter hiding new item)
                     selectedFilter = "All"
-
                     vm.add(company, position, status)
-                    scope.launch { sheetState.hide() }
-                        .invokeOnCompletion { sheetOpen = false }
+
+                    scope.launch {
+                        addSheetState.hide()
+                    }.invokeOnCompletion {
+                        addSheetOpen = false
+                    }
                 },
                 onClose = {
-                    scope.launch { sheetState.hide() }
-                        .invokeOnCompletion { sheetOpen = false }
+                    scope.launch {
+                        addSheetState.hide()
+                    }.invokeOnCompletion {
+                        addSheetOpen = false
+                    }
                 }
             )
-            Spacer(Modifier.height(18.dp))
+
+            Spacer(modifier = Modifier.height(18.dp))
+        }
+    }
+
+    selectedJob?.let { job ->
+        ModalBottomSheet(
+            onDismissRequest = { selectedJob = null },
+            sheetState = actionSheetState
+        ) {
+            ApplicationActionsSheet(
+                job = job,
+                onStatusChange = { newStatus ->
+                    vm.setStatus(job.id, newStatus)
+
+                    scope.launch {
+                        actionSheetState.hide()
+                    }.invokeOnCompletion {
+                        selectedJob = null
+                    }
+                },
+                onDelete = {
+                    vm.delete(job.id)
+
+                    scope.launch {
+                        actionSheetState.hide()
+                    }.invokeOnCompletion {
+                        selectedJob = null
+                    }
+                },
+                onClose = {
+                    scope.launch {
+                        actionSheetState.hide()
+                    }.invokeOnCompletion {
+                        selectedJob = null
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.height(18.dp))
         }
     }
 }
@@ -196,13 +305,10 @@ private fun CompactHeroCard(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(16.dp)
     ) {
-
         Column {
-
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 StatBlock(
                     title = "Total",
                     value = total.toString(),
@@ -222,10 +328,10 @@ private fun CompactHeroCard(
                 )
             }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             val progress =
-                if (total == 0) 0f else (offers.toFloat() / total.toFloat())
+                if (total == 0) 0f else offers.toFloat() / total.toFloat()
 
             LinearProgressIndicator(
                 progress = { progress },
@@ -237,10 +343,10 @@ private fun CompactHeroCard(
                 trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
 
-            Spacer(Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
-                "Offer rate ${(progress * 100).toInt()}%",
+                text = "Offer rate ${(progress * 100).toInt()}%",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
@@ -258,46 +364,45 @@ private fun StatBlock(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Text(
-            value,
+            text = value,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
 
         Text(
-            title,
+            text = title,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
     }
 }
 
-/*@Composable
-private fun MiniStatPill(label: String, value: String) {
-    Box(
-        Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(Color.White.copy(alpha = 0.18f))
-            .padding(horizontal = 12.dp, vertical = 8.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(value, color = Color.White, fontWeight = FontWeight.SemiBold)
-            Spacer(Modifier.width(8.dp))
-            Text(label, color = Color.White.copy(alpha = 0.85f))
-        }
-    }
-}*/
-
 @Composable
-private fun JobRow(job: JobApplication) {
+private fun JobRow(
+    job: JobApplication,
+    onClick: () -> Unit
+) {
     val status = ApplicationStatus.fromLabel(job.status)
 
     SoftListItem(
         title = if (job.company.isBlank()) "(No company)" else job.company,
-        subtitle = if (job.position.isBlank()) "—" else job.position,
-        leading = { Icon(Icons.Rounded.WorkOutline, contentDescription = null) },
-        trailing = { StatusBadge(status) }
+        subtitle = buildString {
+            append(if (job.position.isBlank()) "—" else job.position)
+            append(" • ")
+            append(formatApplicationDate(job.createdAt))
+        },
+        leading = {
+            Icon(
+                imageVector = Icons.Rounded.WorkOutline,
+                contentDescription = null
+            )
+        },
+        trailing = {
+            StatusBadge(status = status)
+        },
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick
     )
 }
 
@@ -311,12 +416,16 @@ private fun StatusBadge(status: ApplicationStatus) {
     }
 
     Box(
-        Modifier
+        modifier = Modifier
             .clip(RoundedCornerShape(999.dp))
             .background(bg)
             .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
-        Text(status.label, color = fg, fontWeight = FontWeight.SemiBold)
+        Text(
+            text = status.label,
+            color = fg,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 
@@ -327,17 +436,25 @@ private fun TrackerSkeletonRow() {
         contentPadding = PaddingValues(14.dp)
     ) {
         Box(
-            Modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(18.dp)
-                .background(Color.Black.copy(alpha = 0.05f), RoundedCornerShape(999.dp))
+                .background(
+                    Color.Black.copy(alpha = 0.05f),
+                    RoundedCornerShape(999.dp)
+                )
         )
-        Spacer(Modifier.height(10.dp))
+
+        Spacer(modifier = Modifier.height(10.dp))
+
         Box(
-            Modifier
+            modifier = Modifier
                 .fillMaxWidth(0.65f)
                 .height(14.dp)
-                .background(Color.Black.copy(alpha = 0.04f), RoundedCornerShape(999.dp))
+                .background(
+                    Color.Black.copy(alpha = 0.04f),
+                    RoundedCornerShape(999.dp)
+                )
         )
     }
 }

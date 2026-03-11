@@ -3,11 +3,13 @@ package com.example.velora.presentation.app
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
 import com.example.velora.domain.auth.AuthState
@@ -16,6 +18,8 @@ import com.example.velora.presentation.profile.ProfileScreen
 import com.example.velora.presentation.resume.ResumeScreen
 import com.example.velora.presentation.settings.SettingsScreen
 import com.example.velora.presentation.tracker.TrackerScreen
+import com.example.velora.R
+
 
 private data class Tab(val route: String, val label: String, val icon: @Composable () -> Unit)
 
@@ -28,9 +32,11 @@ fun AppScaffold(
     val nav = rememberNavController()
 
     val tabs = listOf(
-        Tab(Destinations.TRACKER, "Tracker") { Icon(Icons.Rounded.Home, null) },
-        Tab(Destinations.RESUME, "Resume") { Icon(Icons.Rounded.Description, null) },
-        Tab(Destinations.PROFILE, "Profile") { Icon(Icons.Rounded.Person, null) },
+        Tab(Destinations.TRACKER, "Tracker") { Icon(painterResource(R.drawable.dast_2), null,
+            modifier = Modifier.size(32.dp)) },
+        Tab(Destinations.RESUME, "Resume") { Icon(painterResource(R.drawable.dash_1), null,
+            modifier = Modifier.size(32.dp)) },
+        /*Tab(Destinations.PROFILE, "Profile") { Icon(Icons.Rounded.Person, null) },*/
     )
 
     val currentRoute = nav.currentBackStackEntryAsState().value?.destination?.route ?: Destinations.TRACKER

@@ -23,7 +23,6 @@ fun VeloraNavHost() {
     val introVm: IntroViewModel = hiltViewModel()
     val introDone by introVm.introDone.collectAsState()
 
-    // Guard to prevent double navigation (common bug in Compose)
     var splashNavigated by remember { mutableStateOf(false) }
 
     fun goNextFromSplash() {
@@ -33,41 +32,47 @@ fun VeloraNavHost() {
         if (!introDone) {
             nav.navigate(Destinations.ONBOARDING) {
                 popUpTo(Destinations.SPLASH) { inclusive = true }
+                launchSingleTop = true
             }
             return
         }
 
         when (authState) {
             AuthState.Loading -> {
-                // If still loading, just go to auth graph (safe default).
-                nav.navigate(Destinations.AUTH_GRAPH) {
-                    popUpTo(0) { inclusive = true }
-                }
+                splashNavigated = false
             }
+
             AuthState.SignedOut -> {
                 nav.navigate(Destinations.AUTH_GRAPH) {
                     popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
                 }
             }
+
             is AuthState.SignedIn -> {
                 nav.navigate(Destinations.APP_GRAPH) {
                     popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
                 }
             }
         }
     }
 
-    NavHost(navController = nav, startDestination = Destinations.INTRO_GRAPH) {
-
-        // INTRO
-        navigation(startDestination = Destinations.SPLASH, route = Destinations.INTRO_GRAPH) {
-
+    NavHost(
+        navController = nav,
+        startDestination = Destinations.INTRO_GRAPH
+    ) {
+        navigation(
+            startDestination = Destinations.SPLASH,
+            route = Destinations.INTRO_GRAPH
+        ) {
             composable(Destinations.SPLASH) {
-                // reset guard if user ever returns here (rare, but safe)
-                LaunchedEffect(Unit) { splashNavigated = false }
+                LaunchedEffect(Unit) {
+                    splashNavigated = false
+                }
 
                 SplashScreen(
-                    logoRes = R.drawable.velora, // <-- put your logo into drawable as velora_mark.png
+                    logoRes = R.drawable.velora,
                     slogan = "Your career, organized.",
                     onFinish = { goNextFromSplash() }
                 )
@@ -77,29 +82,49 @@ fun VeloraNavHost() {
                 OnboardingScreen(
                     onFinish = {
                         introVm.finishIntro()
-                        // after onboarding, decide based on auth
+
                         when (authState) {
-                            AuthState.Loading -> nav.navigate(Destinations.AUTH_GRAPH) { popUpTo(0) { inclusive = true } }
-                            AuthState.SignedOut -> nav.navigate(Destinations.AUTH_GRAPH) { popUpTo(0) { inclusive = true } }
-                            is AuthState.SignedIn -> nav.navigate(Destinations.APP_GRAPH) { popUpTo(0) { inclusive = true } }
+                            is AuthState.SignedIn -> {
+                                nav.navigate(Destinations.APP_GRAPH) {
+                                    popUpTo(Destinations.INTRO_GRAPH) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
+
+                            AuthState.SignedOut,
+                            AuthState.Loading -> {
+                                nav.navigate(Destinations.AUTH_GRAPH) {
+                                    popUpTo(Destinations.INTRO_GRAPH) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
                         }
                     }
                 )
             }
         }
 
-        // AUTH
-        navigation(startDestination = Destinations.LOGIN, route = Destinations.AUTH_GRAPH) {
+        navigation(
+            startDestination = Destinations.LOGIN,
+            route = Destinations.AUTH_GRAPH
+        ) {
             composable(Destinations.LOGIN) {
-                LoginScreen(onGoRegister = { nav.navigate(Destinations.REGISTER) })
+                LoginScreen(
+                    onGoRegister = { nav.navigate(Destinations.REGISTER) }
+                )
             }
+
             composable(Destinations.REGISTER) {
-                RegisterScreen(onGoLogin = { nav.popBackStack() })
+                RegisterScreen(
+                    onGoLogin = { nav.popBackStack() }
+                )
             }
         }
 
-        // APP
-        navigation(startDestination = Destinations.APP_SHELL, route = Destinations.APP_GRAPH) {
+        navigation(
+            startDestination = Destinations.APP_SHELL,
+            route = Destinations.APP_GRAPH
+        ) {
             composable(Destinations.APP_SHELL) {
                 AppScaffold(
                     authState = authState,
@@ -109,20 +134,30 @@ fun VeloraNavHost() {
         }
     }
 
-    /**
-     * Keep auth/app graphs synced AFTER intro is done.
-     * Important: if intro is not done, do nothing (user should stay in intro/onboarding flow).
-     */
-    LaunchedEffect(introDone, authState) {
+    LaunchedEffect(authState, introDone) {
         if (!introDone) return@LaunchedEffect
+
+        val currentRoute = nav.currentBackStackEntry?.destination?.route
 
         when (authState) {
             AuthState.Loading -> Unit
-            AuthState.SignedOut -> nav.navigate(Destinations.AUTH_GRAPH) {
-                popUpTo(0) { inclusive = true }
+
+            AuthState.SignedOut -> {
+                if (currentRoute != Destinations.LOGIN && currentRoute != Destinations.REGISTER) {
+                    nav.navigate(Destinations.AUTH_GRAPH) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             }
-            is AuthState.SignedIn -> nav.navigate(Destinations.APP_GRAPH) {
-                popUpTo(0) { inclusive = true }
+
+            is AuthState.SignedIn -> {
+                if (currentRoute != Destinations.APP_SHELL) {
+                    nav.navigate(Destinations.APP_GRAPH) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             }
         }
     }

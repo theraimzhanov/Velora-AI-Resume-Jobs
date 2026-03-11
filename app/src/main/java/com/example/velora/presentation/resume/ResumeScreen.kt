@@ -4,16 +4,36 @@ import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.UploadFile
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.velora.presentation.ui.SoftBackground
@@ -26,6 +46,8 @@ fun ResumeScreen(
 ) {
     val ui by vm.ui.collectAsState()
     val ctx = LocalContext.current
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val picker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
@@ -48,9 +70,15 @@ fun ResumeScreen(
 
                 item {
                     SoftCard(Modifier.fillMaxWidth()) {
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
                             Column(Modifier.weight(1f)) {
-                                Text("Resume Checker", style = MaterialTheme.typography.titleLarge)
+                                Text(
+                                    "Resume Checker",
+                                    style = MaterialTheme.typography.titleLarge
+                                )
                                 Spacer(Modifier.height(4.dp))
                                 Text(
                                     "Upload a PDF resume and get strengths, weaknesses, ATS fixes.",
@@ -58,7 +86,7 @@ fun ResumeScreen(
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
                                 )
                             }
-                            Icon(Icons.Rounded.Description, null)
+                            Icon(Icons.Rounded.Description, contentDescription = null)
                         }
 
                         Spacer(Modifier.height(14.dp))
@@ -74,26 +102,46 @@ fun ResumeScreen(
                         Spacer(Modifier.height(12.dp))
 
                         Button(
-                            onClick = { picker.launch(arrayOf("application/pdf")) },
-                            modifier = Modifier.fillMaxWidth().height(52.dp)
+                            onClick = {
+                                focusManager.clearFocus(force = true)
+                                keyboardController?.hide()
+                                picker.launch(arrayOf("application/pdf"))
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp)
                         ) {
-                            Icon(Icons.Rounded.UploadFile, null)
+                            Icon(Icons.Rounded.UploadFile, contentDescription = null)
                             Spacer(Modifier.width(10.dp))
-                            Text(if (ui.fileName == null) "Upload Resume (PDF)" else "Change File")
+                            Text(
+                                if (ui.fileName == null) "Upload Resume (PDF)"
+                                else "Change File"
+                            )
                         }
 
                         ui.fileName?.let {
                             Spacer(Modifier.height(10.dp))
-                            Text("Selected: $it", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+                            Text(
+                                "Selected: $it",
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            )
                         }
 
                         Spacer(Modifier.height(12.dp))
 
                         Button(
-                            onClick = { vm.analyze(ctx.contentResolver) },
+                            onClick = {
+                                focusManager.clearFocus(force = true)
+                                keyboardController?.hide()
+                                vm.analyze(ctx.contentResolver)
+                            },
                             enabled = ui.fileUri != null && !ui.loading,
-                            modifier = Modifier.fillMaxWidth().height(52.dp)
-                        ) { Text(if (ui.loading) "Analyzing…" else "Analyze Resume") }
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp)
+                        ) {
+                            Text(if (ui.loading) "Analyzing…" else "Analyze Resume")
+                        }
 
                         ui.error?.let {
                             Spacer(Modifier.height(10.dp))
@@ -109,7 +157,9 @@ fun ResumeScreen(
                             Spacer(Modifier.height(8.dp))
                             LinearProgressIndicator(
                                 progress = { (report.overallScore / 100f).coerceIn(0f, 1f) },
-                                modifier = Modifier.fillMaxWidth().height(8.dp)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(8.dp)
                             )
                             Spacer(Modifier.height(8.dp))
                             Text("${report.overallScore}/100 • ${report.headline}")
@@ -140,7 +190,9 @@ fun ResumeScreen(
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f)
                 ) {
                     Column(
-                        Modifier.fillMaxSize().padding(24.dp),
+                        Modifier
+                            .fillMaxSize()
+                            .padding(24.dp),
                         verticalArrangement = Arrangement.Center
                     ) {
                         CircularProgressIndicator()

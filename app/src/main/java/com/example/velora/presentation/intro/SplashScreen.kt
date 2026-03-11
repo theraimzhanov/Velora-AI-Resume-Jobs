@@ -1,20 +1,21 @@
 package com.example.velora.presentation.intro
 
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -26,61 +27,27 @@ fun SplashScreen(
     slogan: String,
     onFinish: () -> Unit
 ) {
-    // Total time: ~2 seconds
+    var startAnimation by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
-        delay(2000)
+        startAnimation = true
+        delay(2200) // change this if you want longer/shorter splash
         onFinish()
     }
 
-    // Smooth premium motion
-    val ease = FastOutSlowInEasing
-
-    val scale by animateFloatAsState(
-        targetValue = 1f,
-        animationSpec = tween(durationMillis = 700, easing = ease),
-        label = "scale"
-    )
-
-    val alpha by animateFloatAsState(
-        targetValue = 1f,
-        animationSpec = tween(durationMillis = 650, easing = ease),
-        label = "alpha"
-    )
-
-    val floatAnim = rememberInfiniteTransition(label = "float").animateFloat(
-        initialValue = -4f,
-        targetValue = 4f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1400, easing = ease),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "floatY"
-    )
-
-    // Start at 0 then animate in
-    var start by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { start = true }
-
-    val appliedScale = if (start) 1.0f else 0.85f
-    val appliedAlpha = if (start) 1.0f else 0.0f
-
     val logoScale by animateFloatAsState(
-        targetValue = appliedScale,
-        animationSpec = tween(700, easing = ease),
+        targetValue = if (startAnimation) 1f else 0.85f,
+        animationSpec = tween(
+            durationMillis = 800,
+            easing = FastOutSlowInEasing
+        ),
         label = "logoScale"
-    )
-
-    val logoAlpha by animateFloatAsState(
-        targetValue = appliedAlpha,
-        animationSpec = tween(600, easing = ease),
-        label = "logoAlpha"
     )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                // Soft premium background (works with your light theme)
                 Brush.radialGradient(
                     colors = listOf(
                         MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
@@ -88,50 +55,35 @@ fun SplashScreen(
                     ),
                     radius = 1100f
                 )
-            )
-            .padding(24.dp),
+            ),
         contentAlignment = Alignment.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
-            // Logo container (rounded, subtle)
-            Box(
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = logoRes),
+                contentDescription = "Velora logo",
                 modifier = Modifier
-                    .size(92.dp)
-                    .scale(logoScale)
-                    .alpha(logoAlpha)
-                    .offset(y = floatAnim.value.dp)
-                    .background(
-                        color = Color.White.copy(alpha = 0.75f),
-                        shape = RoundedCornerShape(26.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = logoRes),
-                    contentDescription = "Velora logo",
-                    modifier = Modifier.size(92.dp)
-                )
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            // App name (optional — if you want NO word on splash, delete this Text)
-            Text(
-                text = "Velora",
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.alpha(logoAlpha)
+                    .size(320.dp)
+                    .scale(logoScale),
+                contentScale = ContentScale.Fit
             )
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Slogan
+            Text(
+                text = "Velora",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
             Text(
                 text = slogan,
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.Black.copy(alpha = 0.55f),
-                modifier = Modifier.alpha(logoAlpha)
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Black.copy(alpha = 0.55f)
             )
         }
     }
