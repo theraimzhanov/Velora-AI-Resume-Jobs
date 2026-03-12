@@ -1,12 +1,12 @@
 package com.example.velora.presentation.settings
 
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.velora.presentation.ui.*
+import com.example.velora.presentation.ui.VeloraBackground
+import com.example.velora.presentation.ui.VeloraCard
 
 @Composable
 fun SettingsScreen() {
@@ -14,10 +14,11 @@ fun SettingsScreen() {
     var darkMode by remember { mutableStateOf(true) }
 
     VeloraBackground {
-        Column(Modifier.fillMaxSize().padding(16.dp)) {
-            Text("Settings", style = MaterialTheme.typography.headlineMedium)
-            Spacer(Modifier.height(12.dp))
-
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
             VeloraCard(Modifier.fillMaxWidth()) {
                 Toggle("Notifications", notifications) { notifications = it }
                 Spacer(Modifier.height(10.dp))
@@ -30,9 +31,19 @@ fun SettingsScreen() {
 }
 
 @Composable
-private fun Toggle(title: String, value: Boolean, onChange: (Boolean) -> Unit) {
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+private fun Toggle(
+    title: String,
+    value: Boolean,
+    onChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         Text(title, style = MaterialTheme.typography.bodyLarge)
-        Switch(checked = value, onCheckedChange = onChange)
+        Switch(
+            checked = value,
+            onCheckedChange = onChange
+        )
     }
 }

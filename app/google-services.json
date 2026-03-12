@@ -12,7 +12,20 @@
           "package_name": "com.example.velora"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "21317757620-g5eod8k8c8n20o9olq19dcf1iqoedojk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.velora",
+            "certificate_hash": "c69ffa025a927402c9526609f9f81205a3a8bf22"
+          }
+        },
+        {
+          "client_id": "21317757620-240md7000iidrk883g0lbick91skn86r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCQxRfG3pm_YshToZOdXWKEunqtNX4EBUU"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "21317757620-240md7000iidrk883g0lbick91skn86r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
