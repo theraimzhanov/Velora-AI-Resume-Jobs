@@ -7,8 +7,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import com.example.velora.navigation.VeloraNavHost
 import com.example.velora.ui.tokens.VeloraTheme
@@ -20,9 +20,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            VeloraTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    VeloraNavHost()
+            var darkMode by rememberSaveable { mutableStateOf(false) }
+
+            VeloraTheme(darkTheme = darkMode) {
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
+                    VeloraNavHost(
+                        modifier = Modifier.padding(innerPadding),
+                        darkMode = darkMode,
+                        onDarkModeChange = { darkMode = it }
+                    )
                 }
             }
         }

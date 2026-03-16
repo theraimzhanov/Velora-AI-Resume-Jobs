@@ -1,6 +1,7 @@
 package com.example.velora.navigation
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.*
 import com.example.velora.R
@@ -15,7 +16,11 @@ import com.example.velora.presentation.intro.OnboardingScreen
 import com.example.velora.presentation.intro.SplashScreen
 
 @Composable
-fun VeloraNavHost() {
+fun VeloraNavHost(
+    modifier: Modifier = Modifier,
+    darkMode: Boolean,
+    onDarkModeChange: (Boolean) -> Unit
+) {
     val nav = rememberNavController()
 
     val authVm: AuthViewModel = hiltViewModel()
@@ -61,7 +66,8 @@ fun VeloraNavHost() {
 
     NavHost(
         navController = nav,
-        startDestination = Destinations.INTRO_GRAPH
+        startDestination = Destinations.INTRO_GRAPH,
+        modifier = modifier
     ) {
         navigation(
             startDestination = Destinations.SPLASH,
@@ -136,6 +142,8 @@ fun VeloraNavHost() {
             composable(Destinations.APP_SHELL) {
                 AppScaffold(
                     authState = authState,
+                    darkMode = darkMode,
+                    onDarkModeChange = onDarkModeChange,
                     onLogout = { authVm.logout() }
                 )
             }

@@ -8,12 +8,31 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.velora.R
 import com.example.velora.domain.auth.AuthState
 import com.example.velora.navigation.Destinations
@@ -32,6 +51,8 @@ private data class Tab(
 @Composable
 fun AppScaffold(
     authState: AuthState,
+    darkMode: Boolean,
+    onDarkModeChange: (Boolean) -> Unit,
     onLogout: () -> Unit
 ) {
     val nav = rememberNavController()
@@ -41,14 +62,14 @@ fun AppScaffold(
         Tab(Destinations.TRACKER, "Tracker") {
             Icon(
                 painter = painterResource(R.drawable.dast_2),
-                contentDescription = null,
+                contentDescription = "Tracker",
                 modifier = Modifier.size(32.dp)
             )
         },
         Tab(Destinations.RESUME, "Resume") {
             Icon(
                 painter = painterResource(R.drawable.dash_1),
-                contentDescription = null,
+                contentDescription = "Resume",
                 modifier = Modifier.size(32.dp)
             )
         }
@@ -57,7 +78,8 @@ fun AppScaffold(
     val currentBackStackEntry by nav.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route ?: Destinations.TRACKER
 
-    val isTopLevelDestination = currentRoute in tabs.map { it.route }
+    val topLevelRoutes = tabs.map { it.route }
+    val isTopLevelDestination = currentRoute in topLevelRoutes
     val showBackButton = !isTopLevelDestination
 
     val topBarTitle = when (currentRoute) {
@@ -104,7 +126,10 @@ fun AppScaffold(
                                     }
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Rounded.Settings, contentDescription = null)
+                                    Icon(
+                                        imageVector = Icons.Rounded.Settings,
+                                        contentDescription = null
+                                    )
                                 }
                             )
 
@@ -115,7 +140,10 @@ fun AppScaffold(
                                     onLogout()
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Rounded.Logout, contentDescription = null)
+                                    Icon(
+                                        imageVector = Icons.Rounded.Logout,
+                                        contentDescription = null
+                                    )
                                 }
                             )
                         }
@@ -165,14 +193,23 @@ fun AppScaffold(
             composable(Destinations.TRACKER) {
                 TrackerScreen(authState = authState)
             }
+
             composable(Destinations.RESUME) {
                 ResumeScreen()
             }
+
             composable(Destinations.PROFILE) {
-                ProfileScreen(authState = authState, onLogout = onLogout)
+                ProfileScreen(
+                    authState = authState,
+                    onLogout = onLogout
+                )
             }
+
             composable(Destinations.SETTINGS) {
-                SettingsScreen()
+                SettingsScreen(
+                    darkMode = darkMode,
+                    onDarkModeChange = onDarkModeChange
+                )
             }
         }
     }
