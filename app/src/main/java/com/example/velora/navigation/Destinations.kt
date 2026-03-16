@@ -16,4 +16,5 @@ object Destinations {
     const val RESUME = "resume"
     const val PROFILE = "profile"
     const val SETTINGS = "settings"
+    const val FORGOT_PASSWORD = "forgot_password"
 }

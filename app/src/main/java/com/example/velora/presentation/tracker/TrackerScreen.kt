@@ -1,25 +1,30 @@
 package com.example.velora.presentation.tracker
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.WorkOutline
+import androidx.compose.material.icons.rounded.Bookmark
+import androidx.compose.material.icons.rounded.Business
+import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material3.Button
-import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -29,7 +34,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,25 +41,25 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.velora.R
 import com.example.velora.domain.auth.AuthState
 import com.example.velora.domain.jobs.ApplicationStatus
 import com.example.velora.domain.jobs.JobApplication
 import com.example.velora.presentation.ui.SoftBackground
 import com.example.velora.presentation.ui.SoftCard
-import com.example.velora.presentation.ui.SoftChip
-import com.example.velora.presentation.ui.SoftListItem
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.draw.clip
-
-private val Filters = listOf("All") + ApplicationStatus.entries.map { it.label }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +73,6 @@ fun TrackerScreen(
 
     val ui by vm.ui.collectAsState()
 
-    var selectedFilter by remember { mutableStateOf("All") }
     var addSheetOpen by remember { mutableStateOf(false) }
     var selectedJob by remember { mutableStateOf<JobApplication?>(null) }
 
@@ -77,13 +80,16 @@ fun TrackerScreen(
     val actionSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
 
-    val jobs = remember(ui.jobs, selectedFilter) {
-        if (selectedFilter == "All") {
-            ui.jobs
-        } else {
-            ui.jobs.filter { it.status.equals(selectedFilter, ignoreCase = true) }
-        }
+    val total = ui.jobs.size
+    val interviews = ui.jobs.count {
+        it.status.equals(ApplicationStatus.Interview.label, ignoreCase = true)
     }
+    val offers = ui.jobs.count {
+        it.status.equals(ApplicationStatus.Offer.label, ignoreCase = true)
+    }
+
+    val interviewRate = if (total == 0) 0 else ((interviews.toFloat() / total.toFloat()) * 100f).toInt()
+    val offerRate = if (total == 0) 0 else ((offers.toFloat() / total.toFloat()) * 100f).toInt()
 
     SoftBackground {
         Scaffold(
@@ -92,8 +98,8 @@ fun TrackerScreen(
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = { addSheetOpen = true },
-                    containerColor = Color(0xFF2D63FF),
-                    contentColor = Color.White
+                    containerColor = Color(0xFFBFDDFB),
+                    contentColor = Color(0xFF3277D8)
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Add,
@@ -102,51 +108,64 @@ fun TrackerScreen(
                 }
             }
         ) { padding ->
-
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
-                    .padding(horizontal = 18.dp, vertical = 14.dp),
+                    .padding(padding),
+                contentPadding = PaddingValues(
+                    start = 18.dp,
+                    end = 18.dp,
+                    top = 18.dp,
+                    bottom = 96.dp
+                ),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                item {
-                    CompactHeroCard(
-                        total = ui.jobs.size,
-                        interviews = ui.jobs.count {
-                            it.status.equals(ApplicationStatus.Interview.label, ignoreCase = true)
-                        },
-                        offers = ui.jobs.count {
-                            it.status.equals(ApplicationStatus.Offer.label, ignoreCase = true)
-                        }
+             /*   item {
+                    Text(
+                        text = "Track Your\nApplications",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF171A22)
                     )
+                }*/
+
+                item {
+                    TrackerBannerCard()
                 }
 
                 item {
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        items(Filters) { label ->
-                            SoftChip(
-                                text = label,
-                                selected = label == selectedFilter,
-                                onClick = { selectedFilter = label }
-                            )
-                        }
-                    }
-                }
-
-                item {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "Applications",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.weight(1f)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        StatMiniCard(
+                            title = "Applications",
+                            value = total.toString(),
+                            modifier = Modifier.weight(1f),
+                            containerColor = Color(0xFFF7F1EA)
                         )
 
-                        TextButton(onClick = { selectedFilter = "All" }) {
-                            Text("See all")
-                        }
+                        StatMiniCard(
+                            title = "Interview Rate",
+                            value = "$interviewRate%",
+                            modifier = Modifier.weight(1f),
+                            containerColor = Color(0xFFF2F4FB)
+                        )
+
+                        StatMiniCard(
+                            title = "Offer Rate",
+                            value = "$offerRate%",
+                            modifier = Modifier.weight(1f),
+                            containerColor = Color(0xFFF2F4FB)
+                        )
                     }
+                }
+
+                item {
+                    PremiumSectionHeader(
+                        title = "Saved",
+                        subtitle = "(${ui.jobs.size})"
+                    )
                 }
 
                 ui.error?.let { err ->
@@ -161,65 +180,27 @@ fun TrackerScreen(
                 when {
                     ui.loading -> {
                         items(4) {
-                            TrackerSkeletonRow()
+                            PremiumTrackerSkeleton()
                         }
                     }
 
-                    jobs.isEmpty() -> {
+                    ui.jobs.isEmpty() -> {
                         item {
-                            SoftCard(
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = if (selectedFilter == "All") {
-                                        "No applications yet"
-                                    } else {
-                                        "No $selectedFilter applications"
-                                    },
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-
-                                Spacer(modifier = Modifier.height(6.dp))
-
-                                Text(
-                                    text = if (selectedFilter == "All") {
-                                        "Tap + to add your first application."
-                                    } else {
-                                        "Switch to All to see everything or add a new one."
-                                    },
-                                    color = Color.Black.copy(alpha = 0.55f)
-                                )
-
-                                if (selectedFilter != "All") {
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    Button(
-                                        onClick = { selectedFilter = "All" },
-                                        shape = RoundedCornerShape(14.dp),
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Text("Show All")
-                                    }
-                                }
-                            }
+                            EmptyTrackerCard(
+                                onAddClick = { addSheetOpen = true }
+                            )
                         }
                     }
 
                     else -> {
                         items(
-                            items = jobs,
+                            items = ui.jobs.sortedByDescending { it.createdAt },
                             key = { it.id }
                         ) { job ->
-                            JobRow(
+                            PremiumJobCard(
                                 job = job,
-                                onClick = {
-                                    selectedJob = job
-                                }
+                                onClick = { selectedJob = job }
                             )
-                        }
-
-                        item {
-                            Spacer(modifier = Modifier.height(80.dp))
                         }
                     }
                 }
@@ -234,7 +215,6 @@ fun TrackerScreen(
         ) {
             AddApplicationSheet(
                 onAdd = { company, position, status ->
-                    selectedFilter = "All"
                     vm.add(company, position, status)
 
                     scope.launch {
@@ -296,165 +276,401 @@ fun TrackerScreen(
 }
 
 @Composable
-private fun CompactHeroCard(
-    total: Int,
-    interviews: Int,
-    offers: Int
-) {
+private fun TrackerBannerCard() {
     SoftCard(
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(0.dp)
     ) {
-        Column {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                StatBlock(
-                    title = "Total",
-                    value = total.toString(),
-                    modifier = Modifier.weight(1f)
-                )
+        Image(
+            painter = painterResource(id = R.drawable.banner_velora1),
+            contentDescription = "Tracker banner",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(180.dp),
+            contentScale = ContentScale.Crop
+        )
+    }
+}
 
-                StatBlock(
-                    title = "Interviews",
-                    value = interviews.toString(),
-                    modifier = Modifier.weight(1f)
-                )
-
-                StatBlock(
-                    title = "Offers",
-                    value = offers.toString(),
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            val progress =
-                if (total == 0) 0f else offers.toFloat() / total.toFloat()
-
-            LinearProgressIndicator(
-                progress = { progress },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(100)),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant
+@Composable
+private fun StatMiniCard(
+    title: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    containerColor: Color
+) {
+    SoftCard(
+        modifier = modifier,
+        contentPadding = PaddingValues(vertical = 16.dp, horizontal = 10.dp),
+        containerColor = containerColor
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF171A22)
             )
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "Offer rate ${(progress * 100).toInt()}%",
+                text = title,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                color = Color(0xFF667085),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
 }
 
 @Composable
-private fun StatBlock(
+private fun PremiumSectionHeader(
     title: String,
-    value: String,
-    modifier: Modifier = Modifier
+    subtitle: String
 ) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+    SoftCard(
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+        containerColor = Color(0xFFF7F7FB)
     ) {
-        Text(
-            text = value,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFFE9F2FF)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Bookmark,
+                    contentDescription = null,
+                    tint = Color(0xFF5C96F5),
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF171A22)
+            )
+
+            Spacer(modifier = Modifier.width(6.dp))
+
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF98A2B3)
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFFEEF2F8)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.MoreHoriz,
+                    contentDescription = null,
+                    tint = Color(0xFF98A2B3),
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PremiumJobCard(
+    job: JobApplication,
+    onClick: () -> Unit
+) {
+    val status = ApplicationStatus.fromLabel(job.status)
+    val companyAccent = companyAccent(job.company)
+
+    SoftCard(
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(14.dp),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Top
+        ) {
+            CompanyBadge(
+                company = job.company,
+                accent = companyAccent
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (job.company.isBlank()) "(No company)" else job.company,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF171A22),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    PremiumStatusPill(status = status)
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = if (job.position.isBlank()) "Unknown position" else job.position,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color(0xFF344054),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = formatApplicationDate(job.createdAt),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFF98A2B3)
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                PremiumProgressRow(status = status)
+            }
+        }
+    }
+}
+
+@Composable
+private fun CompanyBadge(
+    company: String,
+    accent: Color
+) {
+    Box(
+        modifier = Modifier
+            .size(52.dp)
+            .clip(RoundedCornerShape(18.dp))
+            .background(accent.copy(alpha = 0.14f)),
+        contentAlignment = Alignment.Center
+    ) {
+        val first = company.trim().firstOrNull()?.uppercase() ?: "•"
 
         Text(
-            text = title,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            text = first,
+            color = accent,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
         )
     }
 }
 
 @Composable
-private fun JobRow(
-    job: JobApplication,
-    onClick: () -> Unit
-) {
-    val status = ApplicationStatus.fromLabel(job.status)
-
-    SoftListItem(
-        title = if (job.company.isBlank()) "(No company)" else job.company,
-        subtitle = buildString {
-            append(if (job.position.isBlank()) "—" else job.position)
-            append(" • ")
-            append(formatApplicationDate(job.createdAt))
-        },
-        leading = {
-            Icon(
-                imageVector = Icons.Rounded.WorkOutline,
-                contentDescription = null
-            )
-        },
-        trailing = {
-            StatusBadge(status = status)
-        },
-        modifier = Modifier.fillMaxWidth(),
-        onClick = onClick
-    )
-}
-
-@Composable
-private fun StatusBadge(status: ApplicationStatus) {
+private fun PremiumStatusPill(status: ApplicationStatus) {
     val (bg, fg) = when (status) {
-        ApplicationStatus.Applied -> Color(0xFFE9EEF8) to Color(0xFF2D63FF)
-        ApplicationStatus.Interview -> Color(0xFFFFF1E6) to Color(0xFFCC6A19)
-        ApplicationStatus.Offer -> Color(0xFFE7F7EF) to Color(0xFF1F9D5A)
-        ApplicationStatus.Rejected -> Color(0xFFFFE8EA) to Color(0xFFCC2F3A)
+        ApplicationStatus.Applied -> Color(0xFFF5ECD9) to Color(0xFF9A7A27)
+        ApplicationStatus.Interview -> Color(0xFFE8F0FF) to Color(0xFF407BFF)
+        ApplicationStatus.Offer -> Color(0xFFE8F8EE) to Color(0xFF25935C)
+        ApplicationStatus.Rejected -> Color(0xFFFFECEE) to Color(0xFFC43D4C)
     }
 
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(999.dp))
             .background(bg)
-            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .padding(horizontal = 12.dp, vertical = 7.dp)
     ) {
         Text(
             text = status.label,
             color = fg,
+            style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold
         )
     }
 }
 
 @Composable
-private fun TrackerSkeletonRow() {
+private fun PremiumProgressRow(status: ApplicationStatus) {
+    val progress = when (status) {
+        ApplicationStatus.Applied -> 0.30f
+        ApplicationStatus.Interview -> 0.65f
+        ApplicationStatus.Offer -> 1f
+        ApplicationStatus.Rejected -> 1f
+    }
+
+    val color = when (status) {
+        ApplicationStatus.Applied -> Color(0xFFB6C8E8)
+        ApplicationStatus.Interview -> Color(0xFF7FAEFF)
+        ApplicationStatus.Offer -> Color(0xFF53C487)
+        ApplicationStatus.Rejected -> Color(0xFFE09AA4)
+    }
+
+    Column {
+        LinearProgressIndicator(
+            progress = { progress },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(7.dp)
+                .clip(RoundedCornerShape(999.dp)),
+            color = color,
+            trackColor = Color(0xFFF0F2F6)
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Text(
+            text = when (status) {
+                ApplicationStatus.Applied -> "Application submitted"
+                ApplicationStatus.Interview -> "Interview pipeline in progress"
+                ApplicationStatus.Offer -> "Offer received"
+                ApplicationStatus.Rejected -> "Process closed"
+            },
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF98A2B3)
+        )
+    }
+}
+
+@Composable
+private fun EmptyTrackerCard(
+    onAddClick: () -> Unit
+) {
+    SoftCard(
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(18.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(58.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFFEAF2FF)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Business,
+                    contentDescription = null,
+                    tint = Color(0xFF5C96F5)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Text(
+                text = "No applications yet",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Start tracking your job applications and keep everything organized in one place.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF667085)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = onAddClick,
+                shape = RoundedCornerShape(18.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFBFDDFB),
+                    contentColor = Color(0xFF3277D8)
+                )
+            ) {
+                Icon(Icons.Rounded.Add, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Add application")
+            }
+        }
+    }
+}
+
+@Composable
+private fun PremiumTrackerSkeleton() {
     SoftCard(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(14.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(18.dp)
-                .background(
-                    Color.Black.copy(alpha = 0.05f),
-                    RoundedCornerShape(999.dp)
-                )
-        )
+        Row(verticalAlignment = Alignment.Top) {
+            Box(
+                modifier = Modifier
+                    .size(52.dp)
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(Color.Black.copy(alpha = 0.05f))
+            )
 
-        Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(0.65f)
-                .height(14.dp)
-                .background(
-                    Color.Black.copy(alpha = 0.04f),
-                    RoundedCornerShape(999.dp)
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.6f)
+                        .height(18.dp)
+                        .clip(RoundedCornerShape(999.dp))
+                        .background(Color.Black.copy(alpha = 0.05f))
                 )
-        )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.42f)
+                        .height(14.dp)
+                        .clip(RoundedCornerShape(999.dp))
+                        .background(Color.Black.copy(alpha = 0.04f))
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(7.dp)
+                        .clip(RoundedCornerShape(999.dp))
+                        .background(Color.Black.copy(alpha = 0.04f))
+                )
+            }
+        }
+    }
+}
+
+private fun companyAccent(company: String): Color {
+    val key = company.trim().lowercase()
+
+    return when {
+        "google" in key -> Color(0xFF4285F4)
+        "meta" in key -> Color(0xFF1877F2)
+        "netflix" in key -> Color(0xFFE50914)
+        "stripe" in key -> Color(0xFF635BFF)
+        else -> Color(0xFF5C96F5)
     }
 }

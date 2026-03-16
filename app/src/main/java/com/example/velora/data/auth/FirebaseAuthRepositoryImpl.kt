@@ -7,8 +7,9 @@ import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class FirebaseAuthRepositoryImpl(
+class FirebaseAuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth
 ) : AuthRepository {
 
@@ -40,5 +41,9 @@ class FirebaseAuthRepositoryImpl(
     override suspend fun loginWithGoogleIdToken(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential).await()
+    }
+
+    override suspend fun sendPasswordReset(email: String) {
+        auth.sendPasswordResetEmail(email.trim()).await()
     }
 }

@@ -7,6 +7,7 @@ import com.example.velora.R
 import com.example.velora.domain.auth.AuthState
 import com.example.velora.presentation.app.AppScaffold
 import com.example.velora.presentation.auth.AuthViewModel
+import com.example.velora.presentation.auth.ForgotPasswordScreen
 import com.example.velora.presentation.auth.LoginScreen
 import com.example.velora.presentation.auth.RegisterScreen
 import com.example.velora.presentation.intro.IntroViewModel
@@ -110,13 +111,20 @@ fun VeloraNavHost() {
         ) {
             composable(Destinations.LOGIN) {
                 LoginScreen(
-                    onGoRegister = { nav.navigate(Destinations.REGISTER) }
+                    onGoRegister = { nav.navigate(Destinations.REGISTER) },
+                    onGoForgotPassword = { nav.navigate(Destinations.FORGOT_PASSWORD) }
                 )
             }
 
             composable(Destinations.REGISTER) {
                 RegisterScreen(
                     onGoLogin = { nav.popBackStack() }
+                )
+            }
+
+            composable(Destinations.FORGOT_PASSWORD) {
+                ForgotPasswordScreen(
+                    onBack = { nav.popBackStack() }
                 )
             }
         }

@@ -4,7 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,30 +20,54 @@ import com.example.velora.ui.tokens.Velora
 @Composable
 fun SoftBackground(content: @Composable BoxScope.() -> Unit) {
     Box(
-        Modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-    ) { content() }
+    ) {
+        content()
+    }
 }
 
 @Composable
 fun SoftCard(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(18.dp),
+    containerColor: Color = MaterialTheme.colorScheme.surface,
+    onClick: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val t = Velora.tokens
     val shape = RoundedCornerShape(t.radius.xl)
 
+    val cardContent: @Composable () -> Unit = {
+        Column(
+            modifier = Modifier.padding(contentPadding),
+            content = content
+        )
+    }
+
     Card(
         modifier = modifier
             .clip(shape)
-            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.9f), shape),
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f),
+                shape = shape
+            ),
         shape = shape,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp) // Soft UI uses minimal shadow
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(Modifier.padding(contentPadding), content = content)
+        if (onClick != null) {
+            Surface(
+                onClick = onClick,
+                color = Color.Transparent
+            ) {
+                cardContent()
+            }
+        } else {
+            cardContent()
+        }
     }
 }
 
@@ -60,8 +88,15 @@ fun SoftChip(
         tonalElevation = 0.dp,
         modifier = Modifier.height(34.dp)
     ) {
-        Box(Modifier.padding(horizontal = 14.dp), contentAlignment = androidx.compose.ui.Alignment.Center) {
-            Text(text, color = fg, style = MaterialTheme.typography.labelLarge)
+        Box(
+            modifier = Modifier.padding(horizontal = 14.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = text,
+                color = fg,
+                style = MaterialTheme.typography.labelLarge
+            )
         }
     }
 }
@@ -77,7 +112,10 @@ fun SoftIconButton(
         color = Color(0xFFF1F0EC),
         tonalElevation = 0.dp
     ) {
-        Box(Modifier.size(44.dp), contentAlignment = androidx.compose.ui.Alignment.Center) {
+        Box(
+            modifier = Modifier.size(44.dp),
+            contentAlignment = Alignment.Center
+        ) {
             icon()
         }
     }
@@ -92,7 +130,11 @@ fun SoftListItem(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
-    val content: @Composable () -> Unit = {
+    SoftCard(
+        modifier = modifier,
+        contentPadding = PaddingValues(0.dp),
+        onClick = onClick
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -101,36 +143,28 @@ fun SoftListItem(
         ) {
             if (leading != null) {
                 leading()
-                Spacer(Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(12.dp))
             }
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.height(4.dp))
                 Text(
-                    subtitle,
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = subtitle,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
             }
 
             if (trailing != null) {
-                Spacer(Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(12.dp))
                 trailing()
             }
-        }
-    }
-
-    SoftCard(modifier = modifier) {
-        if (onClick != null) {
-            Surface(
-                onClick = onClick,
-                color = Color.Transparent
-            ) {
-                content()
-            }
-        } else {
-            content()
         }
     }
 }

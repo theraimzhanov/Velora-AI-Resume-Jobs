@@ -23,6 +23,7 @@ import com.example.velora.R
 @Composable
 fun LoginScreen(
     onGoRegister: () -> Unit,
+    onGoForgotPassword: () -> Unit,
     vm: AuthViewModel = hiltViewModel()
 ) {
     val ui by vm.ui.collectAsState()
@@ -32,7 +33,10 @@ fun LoginScreen(
 
     LaunchedEffect(Unit) {
         vm.events.flow.collect { e ->
-            if (e is AuthEvent.Error) error = e.msg
+            when (e) {
+                is AuthEvent.Error -> error = e.msg
+                is AuthEvent.Success -> Unit
+            }
         }
     }
 
@@ -44,9 +48,7 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             AuthCard(Modifier.fillMaxWidth()) {
-
-                // Use your actual drawable name:
-                Hero(R.drawable.login) // or Hero(R.drawable.login_hero)
+                Hero(R.drawable.login)
 
                 Spacer(Modifier.height(10.dp))
 
@@ -82,14 +84,24 @@ fun LoginScreen(
                     visual = if (showPw) VisualTransformation.None else PasswordVisualTransformation()
                 )
 
+                Spacer(Modifier.height(4.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onGoForgotPassword) {
+                        Text("Forgot Password?", color = Color(0xFF2E5E73))
+                    }
+                }
+
                 error?.let {
-                    Spacer(Modifier.height(10.dp))
+                    Spacer(Modifier.height(6.dp))
                     Text(it, color = MaterialTheme.colorScheme.error)
                 }
 
-                Spacer(Modifier.height(14.dp))
+                Spacer(Modifier.height(10.dp))
 
-                // Email/Password login
                 PrimaryAuthButton(
                     text = if (ui.loading) "Signing in..." else "Sign In",
                     enabled = ui.canSubmit
@@ -98,7 +110,6 @@ fun LoginScreen(
                     vm.login()
                 }
 
-                // Google login
                 Spacer(Modifier.height(10.dp))
 
                 OutlinedButton(
@@ -107,7 +118,9 @@ fun LoginScreen(
                         vm.loginWithGoogle(context)
                     },
                     enabled = !ui.loading,
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
                     shape = RoundedCornerShape(999.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
                         containerColor = Color(0xFFF2F2F2),
