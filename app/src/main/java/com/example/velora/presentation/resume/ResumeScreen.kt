@@ -57,9 +57,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.velora.R
 import com.example.velora.domain.resume.ResumeReport
 import com.example.velora.domain.resume.RoadmapStep
 import com.example.velora.presentation.ui.SoftBackground
@@ -314,21 +317,28 @@ private fun FileStatusCard(
 
             Spacer(Modifier.width(12.dp))
 
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp)
+            ) {
                 Text(
-                    text = if (fileName == null) "No resume selected" else fileName,
-                    style = MaterialTheme.typography.titleMedium
+                    text = if (fileName == null) stringResource(R.string.no_resume_selected) else fileName,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = "Supported: PDF, DOCX, DOC",
+                    text = stringResource(R.string.supported_pdf_docx_doc),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
-
             Button(onClick = onPickFile) {
-                Text(if (fileName == null) "Upload" else "Change")
+                Text(if (fileName == null) stringResource(R.string.upload) else stringResource(R.string.change))
             }
         }
     }

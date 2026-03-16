@@ -19,7 +19,9 @@ import com.example.velora.presentation.intro.SplashScreen
 fun VeloraNavHost(
     modifier: Modifier = Modifier,
     darkMode: Boolean,
-    onDarkModeChange: (Boolean) -> Unit
+    onDarkModeChange: (Boolean) -> Unit,
+    selectedLanguage: String,
+    onLanguageSelected: (String, String) -> Unit
 ) {
     val nav = rememberNavController()
 
@@ -144,6 +146,8 @@ fun VeloraNavHost(
                     authState = authState,
                     darkMode = darkMode,
                     onDarkModeChange = onDarkModeChange,
+                    selectedLanguage = selectedLanguage,
+                    onLanguageSelected = onLanguageSelected,
                     onLogout = { authVm.logout() }
                 )
             }

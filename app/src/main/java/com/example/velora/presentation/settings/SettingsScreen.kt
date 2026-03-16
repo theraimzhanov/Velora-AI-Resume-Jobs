@@ -3,17 +3,7 @@ package com.example.velora.presentation.settings
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -24,19 +14,8 @@ import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -51,11 +30,12 @@ import com.example.velora.presentation.ui.SoftChip
 @Composable
 fun SettingsScreen(
     darkMode: Boolean,
-    onDarkModeChange: (Boolean) -> Unit
+    onDarkModeChange: (Boolean) -> Unit,
+    selectedLanguage: String,
+    onLanguageSelected: (String, String) -> Unit
 ) {
     val context = LocalContext.current
 
-    var selectedLanguage by remember { mutableStateOf("English") }
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
 
@@ -78,11 +58,7 @@ fun SettingsScreen(
                 SettingSwitchItem(
                     icon = {
                         Icon(
-                            imageVector = if (darkMode) {
-                                Icons.Rounded.DarkMode
-                            } else {
-                                Icons.Rounded.LightMode
-                            },
+                            imageVector = if (darkMode) Icons.Rounded.DarkMode else Icons.Rounded.LightMode,
                             contentDescription = null
                         )
                     },
@@ -199,8 +175,8 @@ fun SettingsScreen(
         if (showLanguageDialog) {
             LanguageDialog(
                 selectedLanguage = selectedLanguage,
-                onSelect = {
-                    selectedLanguage = it
+                onSelect = { name, code ->
+                    onLanguageSelected(name, code)
                     showLanguageDialog = false
                 },
                 onDismiss = { showLanguageDialog = false }
@@ -222,7 +198,7 @@ private fun SettingsHeader() {
             .fillMaxWidth()
             .background(
                 brush = Brush.linearGradient(
-                    colors = listOf(
+                    listOf(
                         MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
                         MaterialTheme.colorScheme.secondary.copy(alpha = 0.10f),
                         MaterialTheme.colorScheme.surface.copy(alpha = 0.40f)
@@ -233,17 +209,13 @@ private fun SettingsHeader() {
             .padding(20.dp)
     ) {
         Column {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Rounded.Settings,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
-
                 Spacer(modifier = Modifier.width(10.dp))
-
                 Text(
                     text = "Settings",
                     style = MaterialTheme.typography.headlineSmall,
@@ -288,17 +260,13 @@ private fun SettingSwitchItem(
 
         Spacer(modifier = Modifier.width(14.dp))
 
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
-
             Spacer(modifier = Modifier.height(3.dp))
-
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodyMedium,
@@ -345,17 +313,13 @@ private fun SettingClickableItem(
 
             Spacer(modifier = Modifier.width(14.dp))
 
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
-
                 Spacer(modifier = Modifier.height(3.dp))
-
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodyMedium,
@@ -383,26 +347,28 @@ private fun DividerSpacer() {
 @Composable
 private fun LanguageDialog(
     selectedLanguage: String,
-    onSelect: (String) -> Unit,
+    onSelect: (String, String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val languages = listOf("English", "Russian", "Kyrgyz")
+    val languages = listOf(
+        "English" to "en",
+        "Russian" to "ru",
+        "Kyrgyz" to "ky"
+    )
 
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {},
-        title = {
-            Text("Choose Language")
-        },
+        title = { Text("Choose Language") },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                languages.forEach { language ->
+                languages.forEach { (name, code) ->
                     Surface(
-                        onClick = { onSelect(language) },
+                        onClick = { onSelect(name, code) },
                         shape = MaterialTheme.shapes.large,
-                        color = if (selectedLanguage == language) {
+                        color = if (selectedLanguage == name) {
                             MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)
                         } else {
                             MaterialTheme.colorScheme.surface
@@ -411,21 +377,18 @@ private fun LanguageDialog(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 14.dp, vertical = 14.dp),
+                                .padding(14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = language,
-                                modifier = Modifier.weight(1f),
-                                style = MaterialTheme.typography.bodyLarge
+                                text = name,
+                                modifier = Modifier.weight(1f)
                             )
 
-                            if (selectedLanguage == language) {
+                            if (selectedLanguage == name) {
                                 Text(
                                     text = "Selected",
-                                    color = MaterialTheme.colorScheme.primary,
-                                    style = MaterialTheme.typography.labelLarge,
-                                    fontWeight = FontWeight.SemiBold
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Velora</string>
+    <string name="settings">Настройки</string>
+    <string name="dark_mode">Тёмный режим</string>
+    <string name="language">Язык</string>
+    <string name="about_program">О программе</string>
+    <string name="support">Поддержка</string>
+    <string name="choose_language">Выберите язык</string>
+    <string name="selected">Выбрано</string>
+    <string name="close">Закрыть</string>
+</resources>

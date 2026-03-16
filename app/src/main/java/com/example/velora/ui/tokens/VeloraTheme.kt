@@ -1,6 +1,5 @@
 package com.example.velora.ui.tokens
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -16,23 +15,23 @@ private val SoftLight = lightColorScheme(
     onPrimary = Color.White,
     onBackground = Color(0xFF111111),
     onSurface = Color(0xFF111111),
-    outline = Color(0xFFE5E3DD)
+    outline = Color(0xFFE5E3DD),
 )
 
 private val SoftDark = darkColorScheme(
-    primary = Color(0xFFFF9A5C),
-    secondary = Color(0xFFF3F1EC),
-    background = Color(0xFF111111),
-    surface = Color(0xFF1A1A1A),
+    primary = Color(0xFFFF9B62),
+    secondary = Color(0xFFF4F3EF),
+    background = Color(0xFF111315),
+    surface = Color(0xFF191C1F),
     onPrimary = Color.White,
-    onBackground = Color(0xFFF3F1EC),
-    onSurface = Color(0xFFF3F1EC),
-    outline = Color(0xFF343434)
+    onBackground = Color(0xFFF4F3EF),
+    onSurface = Color(0xFFF4F3EF),
+    outline = Color(0xFF34383D),
 )
 
 @Composable
 fun VeloraTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean,
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(LocalVeloraTokens provides VeloraTokens()) {
