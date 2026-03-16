@@ -1,10 +1,9 @@
 package com.example.velora.domain.resume
 
-import android.net.Uri
-
 interface ResumeAiRepository {
-    suspend fun analyzeResumePdf(
-        fileBytes: ByteArray,
+    suspend fun analyzeResume(
+        extractedText: String,
+        fileName: String?,
         mimeType: String,
         jobTarget: String? = null
     ): ResumeReport

@@ -2,19 +2,17 @@ package com.example.velora.data.resume
 
 import com.example.velora.domain.resume.ResumeAiRepository
 import com.example.velora.domain.resume.ResumeReport
+import com.example.velora.domain.resume.RoadmapStep
 import com.google.firebase.Firebase
 import com.google.firebase.ai.ai
 import org.json.JSONObject
-
-// Firebase AI types (your IDE will help auto-import the correct ones)
-import com.google.firebase.ai.type.Content
-import com.google.firebase.ai.type.InlineDataPart
-import com.google.firebase.ai.type.TextPart
+import org.json.JSONArray
 
 class FirebaseResumeAiRepositoryImpl : ResumeAiRepository {
 
-    override suspend fun analyzeResumePdf(
-        fileBytes: ByteArray,
+    override suspend fun analyzeResume(
+        extractedText: String,
+        fileName: String?,
         mimeType: String,
         jobTarget: String?
     ): ResumeReport {
@@ -22,54 +20,58 @@ class FirebaseResumeAiRepositoryImpl : ResumeAiRepository {
         val model = Firebase.ai.generativeModel("gemini-2.5-flash-lite")
 
         val prompt = buildString {
-            appendLine("You are an expert resume reviewer and ATS specialist.")
-            appendLine("Return ONLY valid JSON in exactly this schema (no markdown, no extra text):")
+            appendLine("You are a senior resume reviewer, ATS specialist, and career coach.")
+            appendLine("Analyze the resume text below for real-world hiring quality.")
+            appendLine("Be practical, specific, and recruiter-oriented.")
+            appendLine()
+            appendLine("Return ONLY valid JSON. No markdown. No explanation outside JSON.")
+            appendLine("Use exactly this schema:")
             appendLine(
                 """
                 {
                   "overallScore": 0,
                   "headline": "",
+                  "redFlags": [],
                   "strengths": [],
                   "weaknesses": [],
                   "quickFixes": [],
+                  "detectedSkills": [],
+                  "missingSkills": [],
                   "keywordGaps": [],
                   "atsNotes": [],
+                  "roadmap": [
+                    {
+                      "phase": "",
+                      "title": "",
+                      "items": []
+                    }
+                  ],
                   "suggestedSummary": ""
                 }
                 """.trimIndent()
             )
-            jobTarget?.takeIf { it.isNotBlank() }?.let { appendLine("Target role: $it") }
+            appendLine()
+            appendLine("Scoring guidance:")
+            appendLine("- 85-100 = strong and competitive")
+            appendLine("- 70-84 = good but needs improvement")
+            appendLine("- 50-69 = weak for competitive roles")
+            appendLine("- below 50 = major resume problems")
+            appendLine()
+            jobTarget?.takeIf { it.isNotBlank() }?.let {
+                appendLine("Target role: $it")
+            }
+            appendLine("File name: ${fileName.orEmpty()}")
+            appendLine("Mime type: $mimeType")
+            appendLine()
+            appendLine("Resume text:")
+            appendLine(extractedText.take(18000))
         }
 
-        // -----------------------------
-        // ✅ Build content (pick the variant that compiles in YOUR SDK)
-        // -----------------------------
-
-        // ===== Variant A (common): Content(role, parts)
-        val content = Content(
-            role = "user",
-            parts = listOf(
-                TextPart(prompt),
-                InlineDataPart(fileBytes, mimeType)
-            )
-        )
-
-        // ===== Variant B (if Variant A doesn't compile):
-        // val content = Content.Builder()
-        //     .setRole("user")
-        //     .setParts(listOf(TextPart(prompt), InlineDataPart(fileBytes, mimeType)))
-        //     .build()
-
-        // ===== Variant C (if both above don't compile):
-        // val content = Content(
-        //     listOf(TextPart(prompt), InlineDataPart(fileBytes, mimeType))
-        // )
-
-        val response = model.generateContent(content)
-
+        val response = model.generateContent(prompt)
         val raw = response.text?.trim().orEmpty()
+
         val jsonOnly = extractJsonObject(raw)
-            ?: error("AI did not return JSON. Raw response:\n$raw")
+            ?: error("AI did not return valid JSON.")
 
         return parseReport(jsonOnly)
     }
@@ -89,14 +91,31 @@ class FirebaseResumeAiRepositoryImpl : ResumeAiRepository {
                 List(a.length()) { idx -> a.optString(idx) }.filter { it.isNotBlank() }
             } ?: emptyList()
 
+        fun roadmap(): List<RoadmapStep> {
+            val a = o.optJSONArray("roadmap") ?: return emptyList()
+            return List(a.length()) { index ->
+                val item = a.optJSONObject(index) ?: JSONObject()
+                val list = item.optJSONArray("items") ?: JSONArray()
+                RoadmapStep(
+                    phase = item.optString("phase"),
+                    title = item.optString("title"),
+                    items = List(list.length()) { i -> list.optString(i) }.filter { it.isNotBlank() }
+                )
+            }
+        }
+
         return ResumeReport(
             overallScore = o.optInt("overallScore", 0),
             headline = o.optString("headline", ""),
+            redFlags = arr("redFlags"),
             strengths = arr("strengths"),
             weaknesses = arr("weaknesses"),
             quickFixes = arr("quickFixes"),
+            detectedSkills = arr("detectedSkills"),
+            missingSkills = arr("missingSkills"),
             keywordGaps = arr("keywordGaps"),
             atsNotes = arr("atsNotes"),
+            roadmap = roadmap(),
             suggestedSummary = o.optString("suggestedSummary", "")
         )
     }

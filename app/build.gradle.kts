@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.velora"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -63,7 +63,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("androidx.compose.material:material-icons-extended")
-    implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
     implementation("com.google.firebase:firebase-analytics")
     // Firebase BoM (use latest from release notes)
     implementation(platform("com.google.firebase:firebase-bom:34.10.0"))
@@ -79,4 +78,11 @@ dependencies {
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation("com.google.firebase:firebase-ai")
+    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
+    implementation("org.apache.poi:poi-ooxml:5.5.1")
+    implementation("org.apache.poi:poi:5.5.1")
+    implementation("org.apache.xmlbeans:xmlbeans:5.3.0")
+    implementation("org.apache.commons:commons-compress:1.28.0")
+    implementation("commons-io:commons-io:2.20.0")
+    implementation("com.github.virtuald:curvesapi:1.08")
 }
