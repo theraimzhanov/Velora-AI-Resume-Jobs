@@ -5,6 +5,7 @@ interface ResumeAiRepository {
         extractedText: String,
         fileName: String?,
         mimeType: String,
-        jobTarget: String? = null
+        jobTarget: String? = null,
+        outputLanguage: String = "English"
     ): ResumeReport
 }

@@ -5,11 +5,18 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ResumeReport(
     val overallScore: Int,
+    val targetFitScore: Int,
+
     val headline: String,
+    val recruiterVerdict: String,
+
+    val formatAssessment: String,
+    val lengthAssessment: String,
+    val targetRoleAssessment: String,
 
     val redFlags: List<String>,
+    val recruiterConcerns: List<String>,
     val strengths: List<String>,
-    val weaknesses: List<String>,
     val quickFixes: List<String>,
 
     val detectedSkills: List<String>,
@@ -23,7 +30,7 @@ data class ResumeReport(
 
 @Serializable
 data class RoadmapStep(
-    val phase: String,          // "Today", "This Week", "Next 30 Days"
+    val phase: String,
     val title: String,
     val items: List<String>
 )

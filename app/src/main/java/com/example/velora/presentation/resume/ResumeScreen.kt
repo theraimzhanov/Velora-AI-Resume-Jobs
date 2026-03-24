@@ -5,10 +5,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,11 +15,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,10 +26,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Description
-import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Flag
+import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material.icons.rounded.Psychology
+import androidx.compose.material.icons.rounded.RecordVoiceOver
 import androidx.compose.material.icons.rounded.School
 import androidx.compose.material.icons.rounded.TrackChanges
 import androidx.compose.material.icons.rounded.UploadFile
@@ -47,22 +44,18 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.velora.R
 import com.example.velora.domain.resume.ResumeReport
 import com.example.velora.domain.resume.RoadmapStep
 import com.example.velora.presentation.ui.SoftBackground
@@ -101,14 +94,15 @@ fun ResumeScreen(
                 ResumeHeroInputCard(
                     fileName = ui.fileName,
                     jobTarget = ui.jobTarget,
+                    analysisLanguage = ui.analysisLanguage,
                     onJobTargetChange = vm::setJobTarget,
+                    onLanguageChange = vm::setAnalysisLanguage,
                     onPickFile = {
                         focusManager.clearFocus(force = true)
                         keyboardController?.hide()
                         picker.launch(
                             arrayOf(
                                 "application/pdf",
-                                "application/msword",
                                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                             )
                         )
@@ -125,10 +119,21 @@ fun ResumeScreen(
 
                 ui.report?.let { report ->
                     ScoreOverviewCard(report)
+                    CompactReviewCard(report)
+
+                    if (report.recruiterConcerns.isNotEmpty()) {
+                        InsightListCard(
+                            title = "Why recruiter may skip",
+                            subtitle = "Main shortlist risks.",
+                            items = report.recruiterConcerns,
+                            icon = Icons.Rounded.RecordVoiceOver
+                        )
+                    }
+
                     if (report.redFlags.isNotEmpty()) {
                         InsightListCard(
-                            title = "Red Flags",
-                            subtitle = "These can reduce interview chances quickly.",
+                            title = "Red flags",
+                            subtitle = "Problems to fix first.",
                             items = report.redFlags,
                             icon = Icons.Rounded.Flag
                         )
@@ -140,37 +145,40 @@ fun ResumeScreen(
                         keywordGaps = report.keywordGaps
                     )
 
-                    InsightListCard(
-                        title = "Quick Fixes",
-                        subtitle = "Best improvements you can do first.",
-                        items = report.quickFixes,
-                        icon = Icons.Rounded.Lightbulb
-                    )
+                    if (report.quickFixes.isNotEmpty()) {
+                        InsightListCard(
+                            title = "Quick fixes",
+                            subtitle = "Fast improvements.",
+                            items = report.quickFixes,
+                            icon = Icons.Rounded.Lightbulb
+                        )
+                    }
 
-                    InsightListCard(
-                        title = "Strengths",
-                        subtitle = "Good signals already present in your resume.",
-                        items = report.strengths,
-                        icon = Icons.Rounded.CheckCircle
-                    )
+                    if (report.strengths.isNotEmpty()) {
+                        InsightListCard(
+                            title = "Strengths",
+                            subtitle = "What already helps you.",
+                            items = report.strengths,
+                            icon = Icons.Rounded.CheckCircle
+                        )
+                    }
 
-                    InsightListCard(
-                        title = "Weaknesses",
-                        subtitle = "Important quality gaps in the current version.",
-                        items = report.weaknesses,
-                        icon = Icons.Rounded.ErrorOutline
-                    )
+                    if (report.atsNotes.isNotEmpty()) {
+                        InsightListCard(
+                            title = "ATS notes",
+                            subtitle = "Scanner and keyword review.",
+                            items = report.atsNotes,
+                            icon = Icons.Rounded.TrackChanges
+                        )
+                    }
 
-                    InsightListCard(
-                        title = "ATS Notes",
-                        subtitle = "How your resume may perform in ATS systems.",
-                        items = report.atsNotes,
-                        icon = Icons.Rounded.TrackChanges
-                    )
+                    if (report.roadmap.isNotEmpty()) {
+                        RoadmapCard(report.roadmap)
+                    }
 
-                    RoadmapCard(report.roadmap)
-
-                    SuggestedSummaryCard(report.suggestedSummary)
+                    if (report.suggestedSummary.isNotBlank()) {
+                        SuggestedSummaryCard(report.suggestedSummary)
+                    }
 
                     Spacer(Modifier.height(80.dp))
                 }
@@ -206,7 +214,9 @@ fun ResumeScreen(
 private fun ResumeHeroInputCard(
     fileName: String?,
     jobTarget: String,
+    analysisLanguage: String,
     onJobTargetChange: (String) -> Unit,
+    onLanguageChange: (String) -> Unit,
     onPickFile: () -> Unit,
     onAnalyze: () -> Unit,
     analyzeEnabled: Boolean,
@@ -220,13 +230,13 @@ private fun ResumeHeroInputCard(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "AI Resume Audit",
+                    text = "AI Resume / CV Audit",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = "Upload your resume and get score, red flags, ATS issues, skill gaps, and an improvement roadmap.",
+                    text = "Upload a resume or CV for recruiter-style feedback.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.70f)
                 )
@@ -258,6 +268,20 @@ private fun ResumeHeroInputCard(
             placeholder = { Text("Example: Android Developer Intern") }
         )
 
+        Spacer(Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = analysisLanguage,
+            onValueChange = onLanguageChange,
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Answer language (optional)") },
+            placeholder = { Text("Default: English") },
+            leadingIcon = {
+                Icon(Icons.Rounded.Language, contentDescription = null)
+            }
+        )
+
         Spacer(Modifier.height(14.dp))
 
         FileStatusCard(fileName = fileName, onPickFile = onPickFile)
@@ -273,7 +297,7 @@ private fun ResumeHeroInputCard(
         ) {
             Icon(Icons.Rounded.Psychology, contentDescription = null)
             Spacer(Modifier.width(10.dp))
-            Text(if (loading) "Analyzing…" else "Run Resume Audit")
+            Text(if (loading) "Analyzing…" else "Run audit")
         }
 
         error?.let {
@@ -323,22 +347,23 @@ private fun FileStatusCard(
                     .padding(end = 8.dp)
             ) {
                 Text(
-                    text = if (fileName == null) stringResource(R.string.no_resume_selected) else fileName,
+                    text = fileName ?: "No resume / CV selected",
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = stringResource(R.string.supported_pdf_docx_doc),
+                    text = "Supported: PDF, DOCX",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
+
             Button(onClick = onPickFile) {
-                Text(if (fileName == null) stringResource(R.string.upload) else stringResource(R.string.change))
+                Text(if (fileName == null) "Upload" else "Change")
             }
         }
     }
@@ -353,6 +378,7 @@ private fun ScoreOverviewCard(report: ResumeReport) {
         ) {
             ScoreRing(
                 score = report.overallScore,
+                label = "Quality",
                 modifier = Modifier.size(88.dp)
             )
 
@@ -360,7 +386,7 @@ private fun ScoreOverviewCard(report: ResumeReport) {
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Resume Health Score",
+                    text = "Resume score",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -384,8 +410,43 @@ private fun ScoreOverviewCard(report: ResumeReport) {
 }
 
 @Composable
+private fun CompactReviewCard(report: ResumeReport) {
+    SoftCard(Modifier.fillMaxWidth()) {
+        Text(
+            text = "Recruiter verdict",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = report.recruiterVerdict,
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            ScoreRing(
+                score = report.targetFitScore,
+                label = "Fit",
+                modifier = Modifier.size(78.dp)
+            )
+            Spacer(Modifier.width(14.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                BulletItem("Role fit: ${report.targetRoleAssessment}")
+                Spacer(Modifier.height(6.dp))
+                BulletItem("Format: ${report.formatAssessment}")
+                Spacer(Modifier.height(6.dp))
+                BulletItem("Length: ${report.lengthAssessment}")
+            }
+        }
+    }
+}
+
+@Composable
 private fun ScoreRing(
     score: Int,
+    label: String,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
@@ -401,8 +462,8 @@ private fun ScoreRing(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "/100",
-                style = MaterialTheme.typography.labelMedium,
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.60f)
             )
         }
@@ -446,7 +507,7 @@ private fun InsightListCard(
 
         Spacer(Modifier.height(14.dp))
 
-        items.take(8).forEach { item ->
+        items.take(6).forEach { item ->
             BulletItem(text = item)
             Spacer(Modifier.height(8.dp))
         }
@@ -461,30 +522,30 @@ private fun SkillsGapCard(
 ) {
     SoftCard(Modifier.fillMaxWidth()) {
         Text(
-            text = "Skills Gap Analysis",
+            text = "Skills gap",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold
         )
 
         Spacer(Modifier.height(6.dp))
         Text(
-            text = "What your resume already shows vs what may be missing for the target role.",
+            text = "Current skills vs missing ones.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
         )
 
         Spacer(Modifier.height(16.dp))
 
-        Text("Detected Skills", style = MaterialTheme.typography.titleMedium)
+        Text("Detected", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(10.dp))
         ChipWrap(
-            items = detectedSkills.ifEmpty { listOf("No strong skills detected yet") },
+            items = detectedSkills.ifEmpty { listOf("No strong skills detected") },
             selected = true
         )
 
         Spacer(Modifier.height(18.dp))
 
-        Text("Missing / Weak Skills", style = MaterialTheme.typography.titleMedium)
+        Text("Missing / weak", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(10.dp))
         ChipWrap(
             items = missingSkills.ifEmpty { keywordGaps.ifEmpty { listOf("No major gaps detected") } },
@@ -502,7 +563,7 @@ private fun ChipWrap(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items.take(16).forEach { skill ->
+        items.take(12).forEach { skill ->
             SoftChip(
                 text = skill,
                 selected = selected,
@@ -514,8 +575,6 @@ private fun ChipWrap(
 
 @Composable
 private fun RoadmapCard(roadmap: List<RoadmapStep>) {
-    if (roadmap.isEmpty()) return
-
     SoftCard(Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
@@ -525,7 +584,7 @@ private fun RoadmapCard(roadmap: List<RoadmapStep>) {
             )
             Spacer(Modifier.width(10.dp))
             Text(
-                text = "Improvement Roadmap",
+                text = "Improvement roadmap",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold
             )
@@ -533,9 +592,9 @@ private fun RoadmapCard(roadmap: List<RoadmapStep>) {
 
         Spacer(Modifier.height(14.dp))
 
-        roadmap.forEachIndexed { index, step ->
-            RoadmapStepCard(step = step, isLast = index == roadmap.lastIndex)
-            if (index != roadmap.lastIndex) Spacer(Modifier.height(12.dp))
+        roadmap.take(3).forEachIndexed { index, step ->
+            RoadmapStepCard(step = step, isLast = index == minOf(roadmap.lastIndex, 2))
+            if (index < minOf(roadmap.lastIndex, 2)) Spacer(Modifier.height(12.dp))
         }
     }
 }
@@ -545,9 +604,7 @@ private fun RoadmapStepCard(
     step: RoadmapStep,
     isLast: Boolean
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    Row(modifier = Modifier.fillMaxWidth()) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(
                 modifier = Modifier
@@ -585,7 +642,7 @@ private fun RoadmapStepCard(
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(Modifier.height(10.dp))
-            step.items.take(4).forEach {
+            step.items.take(3).forEach {
                 BulletItem(text = it)
                 Spacer(Modifier.height(6.dp))
             }
@@ -597,7 +654,7 @@ private fun RoadmapStepCard(
 private fun SuggestedSummaryCard(summary: String) {
     SoftCard(Modifier.fillMaxWidth()) {
         Text(
-            text = "Suggested Professional Summary",
+            text = "Suggested summary",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold
         )

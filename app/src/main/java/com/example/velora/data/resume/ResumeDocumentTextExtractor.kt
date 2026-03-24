@@ -26,7 +26,7 @@ object ResumeDocumentTextExtractor {
             safeMime.contains("pdf") || safeName.endsWith(".pdf") -> extractPdf(bytes)
             safeMime.contains("officedocument.wordprocessingml.document") || safeName.endsWith(".docx") -> extractDocx(bytes)
             safeName.endsWith(".doc") || safeMime.contains("msword") ->
-                error("Legacy DOC files are not supported yet. Please upload PDF or DOCX.")
+                error("Legacy .doc is not supported yet. Please upload PDF or DOCX.")
             else -> error("Unsupported file type. Please upload PDF or DOCX.")
         }.trim().ifBlank {
             error("Could not extract readable text from this file.")

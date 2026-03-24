@@ -23,7 +23,8 @@ data class ResumeUiState(
     val progressLabel: String? = null,
     val report: ResumeReport? = null,
     val error: String? = null,
-    val jobTarget: String = ""
+    val jobTarget: String = "",
+    val analysisLanguage: String = ""
 )
 
 @HiltViewModel
@@ -36,6 +37,10 @@ class ResumeViewModel @Inject constructor(
 
     fun setJobTarget(v: String) {
         _ui.update { it.copy(jobTarget = v) }
+    }
+
+    fun setAnalysisLanguage(v: String) {
+        _ui.update { it.copy(analysisLanguage = v) }
     }
 
     fun onFilePicked(uri: Uri, fileName: String?, mimeType: String?) {
@@ -63,7 +68,7 @@ class ResumeViewModel @Inject constructor(
             _ui.update {
                 it.copy(
                     loading = true,
-                    progressLabel = "Reading document…",
+                    progressLabel = "Reading resume / CV…",
                     report = null,
                     error = null
                 )
@@ -77,13 +82,14 @@ class ResumeViewModel @Inject constructor(
                     fileName = state.fileName
                 )
 
-                _ui.update { it.copy(progressLabel = "Running AI resume audit…") }
+                _ui.update { it.copy(progressLabel = "Running AI recruiter audit…") }
 
                 repo.analyzeResume(
                     extractedText = text,
                     fileName = state.fileName,
                     mimeType = mimeType,
-                    jobTarget = state.jobTarget
+                    jobTarget = state.jobTarget.trim().ifBlank { null },
+                    outputLanguage = state.analysisLanguage.trim().ifBlank { "English" }
                 )
             }.onSuccess { report ->
                 _ui.update {
