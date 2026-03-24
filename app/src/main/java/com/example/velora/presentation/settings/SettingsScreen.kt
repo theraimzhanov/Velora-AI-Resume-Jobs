@@ -175,8 +175,8 @@ fun SettingsScreen(
             LanguageDialog(
                 selectedLanguageCode = selectedLanguageCode,
                 onSelect = { code ->
-                    onLanguageSelected(code)
                     showLanguageDialog = false
+                    onLanguageSelected(code)
                 },
                 onDismiss = { showLanguageDialog = false }
             )
