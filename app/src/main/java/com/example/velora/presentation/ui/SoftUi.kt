@@ -78,8 +78,18 @@ fun SoftChip(
     onClick: () -> Unit
 ) {
     val shape = RoundedCornerShape(999.dp)
-    val bg = if (selected) MaterialTheme.colorScheme.primary else Color(0xFFEDEBE6)
-    val fg = if (selected) Color.White else MaterialTheme.colorScheme.onSurface
+
+    val bg = if (selected) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+    }
+
+    val fg = if (selected) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
 
     Surface(
         onClick = onClick,

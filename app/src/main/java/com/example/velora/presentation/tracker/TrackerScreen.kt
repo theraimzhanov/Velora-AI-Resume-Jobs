@@ -130,7 +130,11 @@ fun TrackerScreen(
                 }*/
 
                 item {
-                    TrackerBannerCard()
+                    TrackerHeroCard(
+                        total = total,
+                        interviews = interviews,
+                        offers = offers
+                    )
                 }
 
                 item {
@@ -276,21 +280,74 @@ fun TrackerScreen(
 }
 
 @Composable
-private fun TrackerBannerCard() {
+private fun TrackerHeroCard(
+    total: Int,
+    interviews: Int,
+    offers: Int
+) {
+    val goal = 20
+    val progress = (total.toFloat() / goal.toFloat()).coerceIn(0f, 1f)
+
     SoftCard(
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(0.dp)
+        contentPadding = PaddingValues(18.dp),
+        containerColor = Color(0xFFF6F8FD)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.banner_velora1),
-            contentDescription = "Tracker banner",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp),
-            contentScale = ContentScale.Crop
-        )
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Your Job Search",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF171A22)
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = when {
+                    total == 0 -> "Start adding applications and build momentum."
+                    offers > 0 -> "Amazing — you already have offer activity."
+                    interviews > 0 -> "You’re getting traction. Keep pushing."
+                    else -> "Consistency wins. Keep applying every day."
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF667085)
+            )
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            Text(
+                text = "Goal progress",
+                style = MaterialTheme.typography.labelLarge,
+                color = Color(0xFF344054),
+                fontWeight = FontWeight.SemiBold
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .clip(RoundedCornerShape(999.dp)),
+                color = Color(0xFF5C96F5),
+                trackColor = Color.White
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "$total of $goal applications target",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFF98A2B3)
+            )
+        }
     }
 }
+
 
 @Composable
 private fun StatMiniCard(
@@ -327,7 +384,6 @@ private fun StatMiniCard(
         }
     }
 }
-
 @Composable
 private fun PremiumSectionHeader(
     title: String,
@@ -373,27 +429,9 @@ private fun PremiumSectionHeader(
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color(0xFF98A2B3)
             )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Box(
-                modifier = Modifier
-                    .size(28.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFEEF2F8)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.MoreHoriz,
-                    contentDescription = null,
-                    tint = Color(0xFF98A2B3),
-                    modifier = Modifier.size(18.dp)
-                )
-            }
         }
     }
 }
-
 @Composable
 private fun PremiumJobCard(
     job: JobApplication,
@@ -428,7 +466,7 @@ private fun PremiumJobCard(
                         text = if (job.company.isBlank()) "(No company)" else job.company,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF171A22),
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f)
