@@ -117,7 +117,7 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            SettingsSectionTitle("Information")
+            SettingsSectionTitle(stringResource(R.string.information))
             Spacer(modifier = Modifier.height(8.dp))
 
             SoftCard(

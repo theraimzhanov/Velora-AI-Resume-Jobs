@@ -16,7 +16,7 @@
     <string name="intro2_context">Tu progreso se mantiene actualizado en todas partes con sincronización segura en la nube.</string>
     <string name="intro3">Mejora tu currículum</string>
     <string name="intro3_context">Obtén información útil, corrige errores y haz que tu currículum destaque.</string>
-
+    <string name="information">información</string>
     <string name="skip">Omitir</string>
     <string name="get_started">Comenzar</string>
     <string name="next">Siguiente</string>

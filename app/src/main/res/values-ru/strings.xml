@@ -10,6 +10,7 @@
     <string name="selected">Выбрано</string>
     <string name="close">Закрыть</string>
     <string name="yes">Да</string>
+    <string name="information">информация</string>
     <string name="no">Нет</string>
     <string name="intro1">Умное отслеживание откликов</string>
     <string name="intro1_context">Управляйте каждой заявкой на работу с помощью понятного и организованного процесса.</string>
