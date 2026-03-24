@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -82,10 +83,10 @@ fun TrackerScreen(
 
     val total = ui.jobs.size
     val interviews = ui.jobs.count {
-        it.status.equals(ApplicationStatus.Interview.label, ignoreCase = true)
+        it.status.equals(ApplicationStatus.Interview.name, ignoreCase = true)
     }
     val offers = ui.jobs.count {
-        it.status.equals(ApplicationStatus.Offer.label, ignoreCase = true)
+        it.status.equals(ApplicationStatus.Offer.name, ignoreCase = true)
     }
 
     val interviewRate = if (total == 0) 0 else ((interviews.toFloat() / total.toFloat()) * 100f).toInt()
@@ -143,21 +144,21 @@ fun TrackerScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         StatMiniCard(
-                            title = "Applications",
+                            title = stringResource(R.string.applications),
                             value = total.toString(),
                             modifier = Modifier.weight(1f),
                             containerColor = Color(0xFFF7F1EA)
                         )
 
                         StatMiniCard(
-                            title = "Interview Rate",
+                            title = stringResource(R.string.interview_rate),
                             value = "$interviewRate%",
                             modifier = Modifier.weight(1f),
                             containerColor = Color(0xFFF2F4FB)
                         )
 
                         StatMiniCard(
-                            title = "Offer Rate",
+                            title = stringResource(R.string.offer_rate),
                             value = "$offerRate%",
                             modifier = Modifier.weight(1f),
                             containerColor = Color(0xFFF2F4FB)
@@ -167,7 +168,7 @@ fun TrackerScreen(
 
                 item {
                     PremiumSectionHeader(
-                        title = "Saved",
+                        title = stringResource(R.string.saved),
                         subtitle = "(${ui.jobs.size})"
                     )
                 }
@@ -297,7 +298,7 @@ private fun TrackerHeroCard(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "Your Job Search",
+                text = stringResource(R.string.your_job_search),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF171A22)
@@ -307,10 +308,10 @@ private fun TrackerHeroCard(
 
             Text(
                 text = when {
-                    total == 0 -> "Start adding applications and build momentum."
-                    offers > 0 -> "Amazing — you already have offer activity."
-                    interviews > 0 -> "You’re getting traction. Keep pushing."
-                    else -> "Consistency wins. Keep applying every day."
+                    total == 0 -> stringResource(R.string.tr_1)
+                    offers > 0 -> stringResource(R.string.tr_2)
+                    interviews > 0 -> stringResource(R.string.tr_3)
+                    else -> stringResource(R.string.tr_4)
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color(0xFF667085)
@@ -319,7 +320,7 @@ private fun TrackerHeroCard(
             Spacer(modifier = Modifier.height(18.dp))
 
             Text(
-                text = "Goal progress",
+                text = stringResource(R.string.goal_progress),
                 style = MaterialTheme.typography.labelLarge,
                 color = Color(0xFF344054),
                 fontWeight = FontWeight.SemiBold
@@ -340,7 +341,7 @@ private fun TrackerHeroCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "$total of $goal applications target",
+                text = stringResource(R.string.of_applications_target, total, goal),
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFF98A2B3)
             )
@@ -437,7 +438,7 @@ private fun PremiumJobCard(
     job: JobApplication,
     onClick: () -> Unit
 ) {
-    val status = ApplicationStatus.fromLabel(job.status)
+    val status = ApplicationStatus.fromName(job.status)
     val companyAccent = companyAccent(job.company)
 
     SoftCard(
@@ -463,7 +464,7 @@ private fun PremiumJobCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = if (job.company.isBlank()) "(No company)" else job.company,
+                        text = if (job.company.isBlank()) stringResource(R.string.no_company) else job.company,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -478,7 +479,7 @@ private fun PremiumJobCard(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = if (job.position.isBlank()) "Unknown position" else job.position,
+                    text = if (job.position.isBlank()) stringResource(R.string.unknown_position) else job.position,
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color(0xFF344054),
                     maxLines = 1,
@@ -540,7 +541,7 @@ private fun PremiumStatusPill(status: ApplicationStatus) {
             .padding(horizontal = 12.dp, vertical = 7.dp)
     ) {
         Text(
-            text = status.label,
+            text = status.name,
             color = fg,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold
@@ -579,10 +580,10 @@ private fun PremiumProgressRow(status: ApplicationStatus) {
 
         Text(
             text = when (status) {
-                ApplicationStatus.Applied -> "Application submitted"
-                ApplicationStatus.Interview -> "Interview pipeline in progress"
-                ApplicationStatus.Offer -> "Offer received"
-                ApplicationStatus.Rejected -> "Process closed"
+                ApplicationStatus.Applied -> stringResource(R.string.application_submitted)
+                ApplicationStatus.Interview -> stringResource(R.string.interview_pipeline_in_progress)
+                ApplicationStatus.Offer -> stringResource(R.string.offer_received)
+                ApplicationStatus.Rejected -> stringResource(R.string.process_closed)
             },
             style = MaterialTheme.typography.bodySmall,
             color = Color(0xFF98A2B3)
@@ -619,7 +620,7 @@ private fun EmptyTrackerCard(
             Spacer(modifier = Modifier.height(14.dp))
 
             Text(
-                text = "No applications yet",
+                text = stringResource(R.string.no_applications_yet),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold
             )
@@ -627,7 +628,7 @@ private fun EmptyTrackerCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Start tracking your job applications and keep everything organized in one place.",
+                text = stringResource(R.string.tracker),
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color(0xFF667085)
             )
@@ -644,7 +645,7 @@ private fun EmptyTrackerCard(
             ) {
                 Icon(Icons.Rounded.Add, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Add application")
+                Text(stringResource(R.string.add_application))
             }
         }
     }

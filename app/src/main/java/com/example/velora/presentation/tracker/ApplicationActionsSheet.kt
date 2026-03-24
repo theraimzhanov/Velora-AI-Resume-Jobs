@@ -17,8 +17,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.velora.R
 import com.example.velora.domain.jobs.ApplicationStatus
 import com.example.velora.domain.jobs.JobApplication
 import com.example.velora.presentation.ui.SoftChip
@@ -37,7 +39,7 @@ fun ApplicationActionsSheet(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = job.company.ifBlank { "(No company)" },
+            text = job.company.ifBlank { stringResource(R.string.no_company) },
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold
         )
@@ -64,9 +66,9 @@ fun ApplicationActionsSheet(
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             ApplicationStatus.entries.forEach { status ->
                 SoftChip(
-                    text = status.label,
-                    selected = job.status.equals(status.label, ignoreCase = true),
-                    onClick = { onStatusChange(status.label) }
+                    text = status.name,
+                    selected = job.status.equals(status.name, ignoreCase = true),
+                    onClick = { onStatusChange(status.name) }
                 )
             }
         }
@@ -78,7 +80,7 @@ fun ApplicationActionsSheet(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(18.dp)
         ) {
-            Text("Close")
+            Text(stringResource(R.string.close))
         }
 
         Button(
@@ -90,7 +92,7 @@ fun ApplicationActionsSheet(
                 contentColor = Color.White
             )
         ) {
-            Text("Delete Application")
+            Text(stringResource(R.string.delete_application))
         }
 
         Spacer(Modifier.height(10.dp))

@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -53,8 +54,8 @@ fun LoginScreen(
                 Spacer(Modifier.height(10.dp))
 
                 AuthTitle(
-                    title = "Login",
-                    subtitle = "Please sign in to continue."
+                    title = stringResource(R.string.login),
+                    subtitle = stringResource(R.string.please_sign)
                 )
 
                 Spacer(Modifier.height(14.dp))
@@ -62,7 +63,7 @@ fun LoginScreen(
                 PillTextField(
                     value = ui.email,
                     onValueChange = vm::setEmail,
-                    placeholder = "Email",
+                    placeholder = stringResource(R.string.email),
                     leading = { Icon(Icons.Rounded.Email, contentDescription = null) }
                 )
 
@@ -71,7 +72,7 @@ fun LoginScreen(
                 PillTextField(
                     value = ui.password,
                     onValueChange = vm::setPassword,
-                    placeholder = "Password",
+                    placeholder = stringResource(R.string.password),
                     leading = { Icon(Icons.Rounded.Lock, contentDescription = null) },
                     trailing = {
                         IconButton(onClick = { showPw = !showPw }) {
@@ -91,7 +92,7 @@ fun LoginScreen(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onGoForgotPassword) {
-                        Text("Forgot Password?", color = Color(0xFF2E5E73))
+                        Text(stringResource(R.string.forgot_password), color = Color(0xFF2E5E73))
                     }
                 }
 
@@ -103,7 +104,7 @@ fun LoginScreen(
                 Spacer(Modifier.height(10.dp))
 
                 PrimaryAuthButton(
-                    text = if (ui.loading) "Signing in..." else "Sign In",
+                    text = if (ui.loading) stringResource(R.string.signing_in) else stringResource(R.string.sign_in),
                     enabled = ui.canSubmit
                 ) {
                     error = null
@@ -137,7 +138,7 @@ fun LoginScreen(
                         Text("G", color = Color(0xFF2E5E73))
                     }
                     Spacer(Modifier.width(10.dp))
-                    Text("Continue with Google")
+                    Text(stringResource(R.string.google))
                 }
 
                 Spacer(Modifier.height(10.dp))
@@ -146,7 +147,7 @@ fun LoginScreen(
                     onClick = onGoRegister,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Don’t have an account? Sign Up", color = Color(0xFF2E5E73))
+                    Text(stringResource(R.string.don_t_have), color = Color(0xFF2E5E73))
                 }
             }
         }

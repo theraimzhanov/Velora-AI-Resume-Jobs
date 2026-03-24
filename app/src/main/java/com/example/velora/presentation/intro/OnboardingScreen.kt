@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import com.example.velora.R
@@ -33,25 +34,23 @@ fun OnboardingScreen(
     onFinish: () -> Unit
 ) {
     // Keep your previous text (same idea, upgraded visuals)
-    val pages = remember {
-        listOf(
-            IntroPage(
-                title = "Track smarter",
-                subtitle = "Organize every application with clean status flow.",
-                artRes = R.drawable.viewpager1
-            ),
-            IntroPage(
-                title = "Sync everywhere",
-                subtitle = "Stay updated across devices with cloud-first tracking.",
-                artRes = R.drawable.viewpager2
-            ),
-            IntroPage(
-                title = "Resume insights",
-                subtitle = "Understand what recruiters see. Improve faster.",
-                artRes = R.drawable.viewpager3
-            )
+    val pages = listOf(
+        IntroPage(
+            title = stringResource(R.string.intro1),
+            subtitle = stringResource(R.string.intro1_context),
+            artRes = R.drawable.viewpager1
+        ),
+        IntroPage(
+            title = stringResource(R.string.intro2),
+            subtitle = stringResource(R.string.intro2_context),
+            artRes = R.drawable.viewpager2
+        ),
+        IntroPage(
+            title = stringResource(R.string.intro3),
+            subtitle = stringResource(R.string.intro3_context),
+            artRes = R.drawable.viewpager3
         )
-    }
+    )
 
     val pager = rememberPagerState(pageCount = { pages.size })
     val scope = rememberCoroutineScope()
@@ -72,7 +71,10 @@ fun OnboardingScreen(
                     Box(
                         Modifier
                             .size(28.dp)
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.20f), CircleShape)
+                            .background(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.20f),
+                                CircleShape
+                            )
                     )
                     Spacer(Modifier.width(10.dp))
                     Text(
@@ -88,7 +90,7 @@ fun OnboardingScreen(
                     onClick = onFinish,
                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                 ) {
-                    Text("Skip", color = Color.Black.copy(alpha = 0.45f))
+                    Text(stringResource(R.string.skip), color = Color.Black.copy(alpha = 0.45f))
                 }
             }
 
@@ -126,7 +128,9 @@ fun OnboardingScreen(
                     shape = RoundedCornerShape(18.dp)
                 ) {
                     Text(
-                        text = if (pager.currentPage == pages.lastIndex) "Get Started" else "Next",
+                        text = if (pager.currentPage == pages.lastIndex) stringResource(R.string.get_started) else stringResource(
+                            R.string.next
+                        ),
                         fontWeight = FontWeight.SemiBold
                     )
                 }
@@ -140,7 +144,7 @@ fun OnboardingScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    "Already have an account?",
+                    stringResource(R.string.already_have_an_account),
                     color = Color.Black.copy(alpha = 0.55f),
                     fontWeight = FontWeight.Medium
                 )

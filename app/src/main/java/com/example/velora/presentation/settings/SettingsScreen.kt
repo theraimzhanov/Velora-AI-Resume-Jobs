@@ -38,8 +38,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.velora.R
 import com.example.velora.presentation.ui.SoftBackground
 import com.example.velora.presentation.ui.SoftCard
 
@@ -68,7 +70,7 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            SettingsSectionTitle("Appearance")
+            SettingsSectionTitle(stringResource(R.string.appearance))
             Spacer(modifier = Modifier.height(8.dp))
 
             SoftCard(
@@ -81,11 +83,11 @@ fun SettingsScreen(
                             contentDescription = null
                         )
                     },
-                    title = "Dark Mode",
+                    title = stringResource(R.string.dark_mode),
                     subtitle = if (darkMode) {
-                        "Elegant dark interface is enabled"
+                        stringResource(R.string.extr1)
                     } else {
-                        "Soft light appearance is enabled"
+                        stringResource(R.string.extr2)
                     },
                     checked = darkMode,
                     onCheckedChange = onDarkModeChange
@@ -94,7 +96,7 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            SettingsSectionTitle("Preferences")
+            SettingsSectionTitle(stringResource(R.string.preferences))
             Spacer(modifier = Modifier.height(8.dp))
 
             SoftCard(
@@ -107,8 +109,8 @@ fun SettingsScreen(
                             contentDescription = null
                         )
                     },
-                    title = "Language",
-                    subtitle = "Current: $selectedLanguage",
+                    title = stringResource(R.string.language),
+                    subtitle = stringResource(R.string.current, selectedLanguage),
                     onClick = { showLanguageDialog = true }
                 )
             }
@@ -128,15 +130,15 @@ fun SettingsScreen(
                             contentDescription = null
                         )
                     },
-                    title = "About Program",
-                    subtitle = "Learn more about Velora",
+                    title = stringResource(R.string.about_velora),
+                    subtitle = stringResource(R.string.learn_more_about_velora),
                     onClick = { showAboutDialog = true }
                 )
             }
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            SettingsSectionTitle("Help")
+            SettingsSectionTitle(stringResource(R.string.help))
             Spacer(modifier = Modifier.height(8.dp))
 
             SoftCard(
@@ -149,14 +151,15 @@ fun SettingsScreen(
                             contentDescription = null
                         )
                     },
-                    title = "Support",
+                    title = stringResource(R.string.support),
                     subtitle = supportEmail,
                     onClick = {
                         val intent = Intent(
                             Intent.ACTION_SENDTO,
                             Uri.parse("mailto:$supportEmail")
                         ).apply {
-                            putExtra(Intent.EXTRA_SUBJECT, "Velora Support")
+                            putExtra(Intent.EXTRA_SUBJECT,
+                                context.getString(R.string.velora_support))
                         }
 
                         runCatching {
@@ -335,13 +338,13 @@ private fun LanguageDialog(
     val languages = listOf(
         "English" to "en",
         "Russian" to "ru",
-        "Kyrgyz" to "ky"
+        "Spanish" to "es"
     )
 
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {},
-        title = { Text("Choose Language") },
+        title = { Text(stringResource(R.string.choose_language)) },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -369,7 +372,7 @@ private fun LanguageDialog(
 
                             if (selectedLanguage == name) {
                                 Text(
-                                    text = "Selected",
+                                    text = stringResource(R.string.selected),
                                     color = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -389,15 +392,15 @@ private fun AboutDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Close")
+                Text(stringResource(R.string.close))
             }
         },
         title = {
-            Text("About Velora")
+            Text(stringResource(R.string.about_velora))
         },
         text = {
             Text(
-                text = "Velora is a premium job and internship tracker with resume analysis features. It is designed to help users stay organized, improve applications, and manage career progress in a modern and simple way."
+                text = stringResource(R.string.info_app)
             )
         }
     )

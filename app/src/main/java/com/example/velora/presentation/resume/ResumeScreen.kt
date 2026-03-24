@@ -52,10 +52,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.velora.R
 import com.example.velora.domain.resume.ResumeReport
 import com.example.velora.domain.resume.RoadmapStep
 import com.example.velora.presentation.ui.SoftBackground
@@ -94,9 +96,10 @@ fun ResumeScreen(
                 ResumeHeroInputCard(
                     fileName = ui.fileName,
                     jobTarget = ui.jobTarget,
-                    analysisLanguage = ui.analysisLanguage,
+                    analysisLanguageInput = ui.analysisLanguageInput,
+                    appLanguageName = ui.appLanguageName,
                     onJobTargetChange = vm::setJobTarget,
-                    onLanguageChange = vm::setAnalysisLanguage,
+                    onLanguageChange = vm::setAnalysisLanguageInput,
                     onPickFile = {
                         focusManager.clearFocus(force = true)
                         keyboardController?.hide()
@@ -123,8 +126,8 @@ fun ResumeScreen(
 
                     if (report.recruiterConcerns.isNotEmpty()) {
                         InsightListCard(
-                            title = "Why recruiter may skip",
-                            subtitle = "Main shortlist risks.",
+                            title = stringResource(R.string.why_recruiter_may_skip),
+                            subtitle = stringResource(R.string.main_shortlist_risks),
                             items = report.recruiterConcerns,
                             icon = Icons.Rounded.RecordVoiceOver
                         )
@@ -132,8 +135,8 @@ fun ResumeScreen(
 
                     if (report.redFlags.isNotEmpty()) {
                         InsightListCard(
-                            title = "Red flags",
-                            subtitle = "Problems to fix first.",
+                            title = stringResource(R.string.red_flags),
+                            subtitle = stringResource(R.string.problems_to_fix_first),
                             items = report.redFlags,
                             icon = Icons.Rounded.Flag
                         )
@@ -147,8 +150,8 @@ fun ResumeScreen(
 
                     if (report.quickFixes.isNotEmpty()) {
                         InsightListCard(
-                            title = "Quick fixes",
-                            subtitle = "Fast improvements.",
+                            title = stringResource(R.string.quick_fixes),
+                            subtitle = stringResource(R.string.fast_improvements),
                             items = report.quickFixes,
                             icon = Icons.Rounded.Lightbulb
                         )
@@ -156,8 +159,8 @@ fun ResumeScreen(
 
                     if (report.strengths.isNotEmpty()) {
                         InsightListCard(
-                            title = "Strengths",
-                            subtitle = "What already helps you.",
+                            title = stringResource(R.string.strengths),
+                            subtitle = stringResource(R.string.what_already_helps_you),
                             items = report.strengths,
                             icon = Icons.Rounded.CheckCircle
                         )
@@ -165,8 +168,8 @@ fun ResumeScreen(
 
                     if (report.atsNotes.isNotEmpty()) {
                         InsightListCard(
-                            title = "ATS notes",
-                            subtitle = "Scanner and keyword review.",
+                            title = stringResource(R.string.ats_notes),
+                            subtitle = stringResource(R.string.scanner_and_keyword_review),
                             items = report.atsNotes,
                             icon = Icons.Rounded.TrackChanges
                         )
@@ -214,7 +217,8 @@ fun ResumeScreen(
 private fun ResumeHeroInputCard(
     fileName: String?,
     jobTarget: String,
-    analysisLanguage: String,
+    analysisLanguageInput: String,
+    appLanguageName: String,
     onJobTargetChange: (String) -> Unit,
     onLanguageChange: (String) -> Unit,
     onPickFile: () -> Unit,
@@ -236,7 +240,7 @@ private fun ResumeHeroInputCard(
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = "Upload a resume or CV for recruiter-style feedback.",
+                    text = stringResource(R.string.uploadd),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.70f)
                 )
@@ -264,22 +268,30 @@ private fun ResumeHeroInputCard(
             onValueChange = onJobTargetChange,
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Target role (optional)") },
-            placeholder = { Text("Example: Android Developer Intern") }
+            label = { Text(stringResource(R.string.target_role_optional)) },
+            placeholder = { Text(stringResource(R.string.example_android_developer_intern)) }
         )
 
         Spacer(Modifier.height(12.dp))
 
         OutlinedTextField(
-            value = analysisLanguage,
+            value = analysisLanguageInput,
             onValueChange = onLanguageChange,
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Answer language (optional)") },
-            placeholder = { Text("Default: English") },
+            label = { Text(stringResource(R.string.answer_language_optional)) },
+            placeholder = { Text("Default: $appLanguageName") },
             leadingIcon = {
                 Icon(Icons.Rounded.Language, contentDescription = null)
             }
+        )
+
+        Spacer(Modifier.height(6.dp))
+
+        Text(
+            text = stringResource(R.string.leave_empty_to_use_app_language, appLanguageName),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
         )
 
         Spacer(Modifier.height(14.dp))
@@ -297,7 +309,7 @@ private fun ResumeHeroInputCard(
         ) {
             Icon(Icons.Rounded.Psychology, contentDescription = null)
             Spacer(Modifier.width(10.dp))
-            Text(if (loading) "Analyzing…" else "Run audit")
+            Text(if (loading) stringResource(R.string.analyzing) else stringResource(R.string.run_audit))
         }
 
         error?.let {
@@ -347,7 +359,7 @@ private fun FileStatusCard(
                     .padding(end = 8.dp)
             ) {
                 Text(
-                    text = fileName ?: "No resume / CV selected",
+                    text = fileName ?: stringResource(R.string.no_resume_cv_selected),
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -363,7 +375,7 @@ private fun FileStatusCard(
             }
 
             Button(onClick = onPickFile) {
-                Text(if (fileName == null) "Upload" else "Change")
+                Text(if (fileName == null) stringResource(R.string.upload) else stringResource(R.string.change))
             }
         }
     }
@@ -378,7 +390,7 @@ private fun ScoreOverviewCard(report: ResumeReport) {
         ) {
             ScoreRing(
                 score = report.overallScore,
-                label = "Quality",
+                label = stringResource(R.string.quality),
                 modifier = Modifier.size(88.dp)
             )
 
@@ -386,7 +398,7 @@ private fun ScoreOverviewCard(report: ResumeReport) {
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Resume score",
+                    text = stringResource(R.string.resume_score),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -413,7 +425,7 @@ private fun ScoreOverviewCard(report: ResumeReport) {
 private fun CompactReviewCard(report: ResumeReport) {
     SoftCard(Modifier.fillMaxWidth()) {
         Text(
-            text = "Recruiter verdict",
+            text = stringResource(R.string.recruiter_verdict),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold
         )
@@ -428,16 +440,16 @@ private fun CompactReviewCard(report: ResumeReport) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ScoreRing(
                 score = report.targetFitScore,
-                label = "Fit",
+                label = stringResource(R.string.fit),
                 modifier = Modifier.size(78.dp)
             )
             Spacer(Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
-                BulletItem("Role fit: ${report.targetRoleAssessment}")
+                BulletItem(stringResource(R.string.role_fit, report.targetRoleAssessment))
                 Spacer(Modifier.height(6.dp))
-                BulletItem("Format: ${report.formatAssessment}")
+                BulletItem(stringResource(R.string.format, report.formatAssessment))
                 Spacer(Modifier.height(6.dp))
-                BulletItem("Length: ${report.lengthAssessment}")
+                BulletItem(stringResource(R.string.length, report.lengthAssessment))
             }
         }
     }
@@ -522,14 +534,14 @@ private fun SkillsGapCard(
 ) {
     SoftCard(Modifier.fillMaxWidth()) {
         Text(
-            text = "Skills gap",
+            text = stringResource(R.string.skills_gap),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold
         )
 
         Spacer(Modifier.height(6.dp))
         Text(
-            text = "Current skills vs missing ones.",
+            text = stringResource(R.string.current_skills_vs_missing_ones),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
         )
@@ -539,7 +551,7 @@ private fun SkillsGapCard(
         Text("Detected", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(10.dp))
         ChipWrap(
-            items = detectedSkills.ifEmpty { listOf("No strong skills detected") },
+            items = detectedSkills.ifEmpty { listOf(stringResource(R.string.no_strong_skills_detected)) },
             selected = true
         )
 
@@ -548,7 +560,7 @@ private fun SkillsGapCard(
         Text("Missing / weak", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(10.dp))
         ChipWrap(
-            items = missingSkills.ifEmpty { keywordGaps.ifEmpty { listOf("No major gaps detected") } },
+            items = missingSkills.ifEmpty { keywordGaps.ifEmpty { listOf(stringResource(R.string.no_major_gaps_detected)) } },
             selected = false
         )
     }
@@ -584,7 +596,7 @@ private fun RoadmapCard(roadmap: List<RoadmapStep>) {
             )
             Spacer(Modifier.width(10.dp))
             Text(
-                text = "Improvement roadmap",
+                text = stringResource(R.string.improvement_roadmap),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold
             )
@@ -592,9 +604,10 @@ private fun RoadmapCard(roadmap: List<RoadmapStep>) {
 
         Spacer(Modifier.height(14.dp))
 
-        roadmap.take(3).forEachIndexed { index, step ->
-            RoadmapStepCard(step = step, isLast = index == minOf(roadmap.lastIndex, 2))
-            if (index < minOf(roadmap.lastIndex, 2)) Spacer(Modifier.height(12.dp))
+        val visibleSteps = roadmap.take(3)
+        visibleSteps.forEachIndexed { index, step ->
+            RoadmapStepCard(step = step, isLast = index == visibleSteps.lastIndex)
+            if (index != visibleSteps.lastIndex) Spacer(Modifier.height(12.dp))
         }
     }
 }
@@ -654,7 +667,7 @@ private fun RoadmapStepCard(
 private fun SuggestedSummaryCard(summary: String) {
     SoftCard(Modifier.fillMaxWidth()) {
         Text(
-            text = "Suggested summary",
+            text = stringResource(R.string.suggested_summary),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold
         )
@@ -688,7 +701,10 @@ private fun BulletItem(text: String) {
     }
 }
 
-private fun queryName(cr: android.content.ContentResolver, uri: android.net.Uri): String? {
+private fun queryName(
+    cr: android.content.ContentResolver,
+    uri: android.net.Uri
+): String? {
     val c = cr.query(uri, null, null, null, null) ?: return null
     return c.use {
         val idx = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)

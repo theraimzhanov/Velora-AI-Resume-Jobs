@@ -1,0 +1,153 @@
+<resources>
+    <string name="app_name">Velora</string>
+
+    <string name="settings">Configuración</string>
+    <string name="dark_mode">Modo oscuro</string>
+    <string name="language">Idioma</string>
+    <string name="about_program">Acerca de la aplicación</string>
+    <string name="support">Soporte</string>
+    <string name="choose_language">Elegir idioma</string>
+    <string name="selected">Seleccionado</string>
+    <string name="close">Cerrar</string>
+
+    <string name="intro1">Seguimiento inteligente de solicitudes</string>
+    <string name="intro1_context">Gestiona cada solicitud de empleo con un flujo claro y organizado.</string>
+    <string name="intro2">Sincroniza en todos tus dispositivos</string>
+    <string name="intro2_context">Tu progreso se mantiene actualizado en todas partes con sincronización segura en la nube.</string>
+    <string name="intro3">Mejora tu currículum</string>
+    <string name="intro3_context">Obtén información útil, corrige errores y haz que tu currículum destaque.</string>
+
+    <string name="skip">Omitir</string>
+    <string name="get_started">Comenzar</string>
+    <string name="next">Siguiente</string>
+
+    <string name="already_have_an_account">¿Ya tienes una cuenta?</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="enter_email">Ingresa tu correo y te enviaremos un enlace para restablecerla.</string>
+    <string name="email">Correo electrónico</string>
+    <string name="sending">Enviando...</string>
+    <string name="send_reset_link">Enviar enlace de restablecimiento</string>
+
+    <string name="login">Iniciar sesión</string>
+    <string name="please_sign">Inicia sesión para continuar.</string>
+    <string name="password">Contraseña</string>
+    <string name="signing_in">Iniciando sesión...</string>
+    <string name="sign_in">Entrar</string>
+    <string name="google">Continuar con Google</string>
+    <string name="don_t_have">¿No tienes una cuenta? Regístrate</string>
+
+    <string name="register">Registrarse</string>
+    <string name="please_register_to_continue">Regístrate para continuar.</string>
+    <string name="full_name">Nombre completo</string>
+    <string name="creating">Creando...</string>
+    <string name="sign_up">Crear cuenta</string>
+    <string name="already_have">¿Ya tienes una cuenta? Inicia sesión</string>
+
+    <string name="log_out">Cerrar sesión</string>
+    <string name="are_you_sure_you_want_to_log_out">¿Seguro que quieres cerrar sesión?</string>
+
+    <string name="no_resume_selected">No se ha seleccionado ningún currículum</string>
+    <string name="supported_pdf_docx_doc">Compatible: PDF, DOCX, DOC</string>
+    <string name="upload">Subir</string>
+    <string name="change">Cambiar</string>
+    <string name="saved">Guardado</string>
+    <string name="your_job_search">Tu búsqueda de empleo</string>
+    <string name="applications">Solicitudes</string>
+    <string name="interview_rate">Tasa de entrevistas</string>
+    <string name="offer_rate">Tasa de ofertas</string>
+
+    <string name="uploadd">Sube un currículum para recibir comentarios como de un reclutador.</string>
+
+    <string name="target_role_optional">Puesto objetivo (opcional)</string>
+    <string name="example_android_developer_intern">Ejemplo: Becario Desarrollador Android</string>
+
+    <string name="answer_language_optional">Idioma de respuesta (opcional)</string>
+    <string name="leave_empty_to_use_app_language">
+Dejar vacío para usar el idioma de la app: %1$s
+</string>
+
+    <string name="run_audit">Analizar</string>
+    <string name="analyzing">Analizando…</string>
+
+    <string name="no_resume_cv_selected">No se seleccionó currículum / CV</string>
+    <string name="applied">Enviado</string>
+    <string name="interview">Entrevista</string>
+    <string name="offer">Oferta</string>
+    <string name="rejected">Rechazado</string>
+
+    <string name="learn_more_about_velora">Más información sobre Velora</string>
+    <string name="help">Ayuda</string>
+    <string name="velora_support">Soporte de Velora</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
+    <string name="current">Actual: %1$s</string>
+    <string name="preferences">Preferencias</string>
+
+    <string name="extr1">La elegante interfaz oscura está activada</string>
+    <string name="extr2">La apariencia clara y suave está activada</string>
+
+    <string name="appearance">Apariencia</string>
+    <string name="profile">Perfil</string>
+    <string name="resume_checker">Analizador de currículum</string>
+    <string name="quality">Calidad</string>
+    <string name="resume_score">Puntuación del currículum</string>
+    <string name="recruiter_verdict">Veredicto del reclutador</string>
+
+    <string name="fit">Compatibilidad</string>
+    <string name="role_fit">Compatibilidad con el puesto: %1$s</string>
+
+    <string name="format">Formato: %1$s</string>
+    <string name="length">Longitud: %1$s</string>
+
+    <string name="skills_gap">Falta de habilidades</string>
+    <string name="current_skills_vs_missing_ones">
+Habilidades actuales vs habilidades faltantes.
+</string>
+
+    <string name="no_strong_skills_detected">No se detectaron habilidades fuertes</string>
+    <string name="no_major_gaps_detected">No se detectaron grandes faltas</string>
+
+    <string name="improvement_roadmap">Plan de mejora</string>
+    <string name="suggested_summary">Resumen sugerido</string>
+    <string name="tr_1">Empieza a añadir solicitudes y gana impulso.</string>
+    <string name="tr_2">Genial — ya tienes actividad con ofertas.</string>
+    <string name="tr_3">Estás avanzando. Sigue adelante.</string>
+    <string name="tr_4">La constancia gana. Sigue aplicando cada día.</string>
+
+    <string name="goal_progress">Progreso del objetivo</string>
+    <string name="of_applications_target">%1$d de %2$d solicitudes objetivo</string>
+
+    <string name="unknown_position">Posición desconocida</string>
+
+    <string name="application_submitted">Solicitud enviada</string>
+    <string name="interview_pipeline_in_progress">Proceso de entrevista en progreso</string>
+    <string name="offer_received">Oferta recibida</string>
+    <string name="process_closed">Proceso cerrado</string>
+
+    <string name="no_applications_yet">Aún no hay solicitudes</string>
+
+    <string name="tracker">
+Empieza a seguir tus solicitudes de empleo y mantén todo organizado en un solo lugar.
+</string>
+
+    <string name="why_recruiter_may_skip">Por qué un reclutador puede descartarlo</string>
+    <string name="main_shortlist_risks">Principales riesgos para la preselección.</string>
+    <string name="red_flags">Señales de alerta</string>
+    <string name="problems_to_fix_first">Problemas que debes corregir primero.</string>
+    <string name="quick_fixes">Correcciones rápidas</string>
+    <string name="fast_improvements">Mejoras rápidas.</string>
+    <string name="strengths">Fortalezas</string>
+    <string name="what_already_helps_you">Lo que ya te ayuda.</string>
+    <string name="ats_notes">Notas ATS</string>
+    <string name="scanner_and_keyword_review">Revisión del escáner y de palabras clave.</string>
+
+    <string name="about_velora">Acerca de Velora</string>
+    <string name="info_app">Velora es un rastreador premium de empleos y prácticas con funciones de análisis de currículum. Está diseñado para ayudar a los usuarios a mantenerse organizados, mejorar sus solicitudes y gestionar su progreso profesional de una manera moderna y simple.</string>
+
+    <string name="add_application">Agregar solicitud</string>
+    <string name="company">Empresa</string>
+    <string name="position">Puesto</string>
+    <string name="status">Estado</string>
+    <string name="delete_application">Eliminar solicitud</string>
+    <string name="no_company">(Sin empresa)</string>
+</resources>

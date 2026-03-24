@@ -22,8 +22,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.velora.R
 import com.example.velora.domain.jobs.ApplicationStatus
 import com.example.velora.presentation.ui.SoftChip
 
@@ -34,7 +36,7 @@ import com.example.velora.presentation.ui.SoftChip
 ) {
     var company by remember { mutableStateOf("") }
     var position by remember { mutableStateOf("") }
-    var status by remember { mutableStateOf(ApplicationStatus.Applied.label) }
+    var status by remember { mutableStateOf(ApplicationStatus.Applied.name) }
 
     Column(
         Modifier
@@ -42,8 +44,8 @@ import com.example.velora.presentation.ui.SoftChip
             .padding(horizontal = 20.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Add Application", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
-            TextButton(onClick = onClose) { Text("Close") }
+            Text(stringResource(R.string.add_application), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
+            TextButton(onClick = onClose) { Text(stringResource(R.string.close)) }
         }
 
         Spacer(Modifier.height(14.dp))
@@ -51,7 +53,7 @@ import com.example.velora.presentation.ui.SoftChip
         OutlinedTextField(
             value = company,
             onValueChange = { company = it },
-            label = { Text("Company") },
+            label = { Text(stringResource(R.string.company)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(18.dp)
@@ -62,7 +64,7 @@ import com.example.velora.presentation.ui.SoftChip
         OutlinedTextField(
             value = position,
             onValueChange = { position = it },
-            label = { Text("Position") },
+            label = { Text(stringResource(R.string.position)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(18.dp)
@@ -71,7 +73,7 @@ import com.example.velora.presentation.ui.SoftChip
         Spacer(Modifier.height(14.dp))
 
         Text(
-            "Status",
+            stringResource(R.string.status),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
@@ -81,9 +83,9 @@ import com.example.velora.presentation.ui.SoftChip
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             ApplicationStatus.entries.forEach { s ->
                 SoftChip(
-                    text = s.label,
-                    selected = status == s.label,
-                    onClick = { status = s.label }
+                    text = s.name,
+                    selected = status == s.name,
+                    onClick = { status = s.name }
                 )
             }
         }
@@ -102,7 +104,7 @@ import com.example.velora.presentation.ui.SoftChip
                 contentColor = Color.White
             )
         ) {
-            Text("Add Application", fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.add_application), fontWeight = FontWeight.SemiBold)
         }
 
         Spacer(Modifier.height(10.dp))

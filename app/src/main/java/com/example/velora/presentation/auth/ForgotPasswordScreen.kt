@@ -13,8 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.velora.R
 
 @Composable
 fun ForgotPasswordScreen(
@@ -76,8 +78,8 @@ fun ForgotPasswordScreen(
                 Spacer(Modifier.height(4.dp))
 
                 AuthTitle(
-                    title = "Forgot Password",
-                    subtitle = "Enter your email and we’ll send you a reset link."
+                    title = stringResource(R.string.forgot_password),
+                    subtitle = stringResource(R.string.enter_email)
                 )
 
                 Spacer(Modifier.height(14.dp))
@@ -85,7 +87,7 @@ fun ForgotPasswordScreen(
                 PillTextField(
                     value = ui.email,
                     onValueChange = vm::setEmail,
-                    placeholder = "Email",
+                    placeholder = stringResource(R.string.email),
                     leading = { Icon(Icons.Rounded.Email, contentDescription = null) }
                 )
 
@@ -104,7 +106,7 @@ fun ForgotPasswordScreen(
                 Spacer(Modifier.height(16.dp))
 
                 PrimaryAuthButton(
-                    text = if (ui.loading) "Sending..." else "Send reset link",
+                    text = if (ui.loading) stringResource(R.string.sending) else stringResource(R.string.send_reset_link),
                     enabled = ui.canResetPassword
                 ) {
                     message = null
