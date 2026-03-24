@@ -1,6 +1,7 @@
 package com.example.velora.di
 
 import android.content.Context
+import com.example.velora.data.local.SettingsPreferences
 import com.example.velora.data.prefs.IntroPrefs
 import dagger.Module
 import dagger.Provides
@@ -12,6 +13,16 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DataStoreModule {
-    @Provides @Singleton
-    fun introPrefs(@ApplicationContext ctx: Context): IntroPrefs = IntroPrefs(ctx)
+
+    @Provides
+    @Singleton
+    fun provideIntroPrefs(
+        @ApplicationContext ctx: Context
+    ): IntroPrefs = IntroPrefs(ctx)
+
+    @Provides
+    @Singleton
+    fun provideSettingsPreferences(
+        @ApplicationContext ctx: Context
+    ): SettingsPreferences = SettingsPreferences(ctx)
 }

@@ -4,7 +4,7 @@ import android.content.ContentResolver
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.velora.data.local.SettingsPreferences
+import com.example.velora.core.language.LocaleManager
 import com.example.velora.data.resume.ResumeDocumentTextExtractor
 import com.example.velora.domain.resume.ResumeAiRepository
 import com.example.velora.domain.resume.ResumeReport
@@ -13,7 +13,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -25,40 +24,40 @@ data class ResumeUiState(
     val progressLabel: String? = null,
     val report: ResumeReport? = null,
     val error: String? = null,
-
     val jobTarget: String = "",
     val analysisLanguageInput: String = "",
-
     val appLanguageCode: String = "en",
     val appLanguageName: String = "English"
 )
+
 @HiltViewModel
 class ResumeViewModel @Inject constructor(
-    private val repo: ResumeAiRepository,
-    private val settingsPreferences: SettingsPreferences
+    private val repo: ResumeAiRepository
 ) : ViewModel() {
 
-    private val _ui = MutableStateFlow(ResumeUiState())
+    private val _ui = MutableStateFlow(
+        ResumeUiState().copy(
+            appLanguageCode = LocaleManager.currentLanguageCode(),
+            appLanguageName = languageNameFromCode(LocaleManager.currentLanguageCode())
+        )
+    )
     val ui: StateFlow<ResumeUiState> = _ui.asStateFlow()
 
-    init {
-        observeAppLanguage()
+    private fun languageNameFromCode(code: String): String {
+        return when (code.lowercase()) {
+            "ru" -> "Russian"
+            "es" -> "Spanish"
+            else -> "English"
+        }
     }
 
-    private fun observeAppLanguage() {
-        viewModelScope.launch {
-            combine(
-                settingsPreferences.languageCodeFlow,
-                settingsPreferences.languageNameFlow
-            ) { code, name -> code to name }
-                .collect { (code, name) ->
-                    _ui.update {
-                        it.copy(
-                            appLanguageCode = code,
-                            appLanguageName = name
-                        )
-                    }
-                }
+    fun refreshLanguage() {
+        val code = LocaleManager.currentLanguageCode()
+        _ui.update {
+            it.copy(
+                appLanguageCode = code,
+                appLanguageName = languageNameFromCode(code)
+            )
         }
     }
 

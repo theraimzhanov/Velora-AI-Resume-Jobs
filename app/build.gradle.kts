@@ -85,4 +85,5 @@ dependencies {
     implementation("org.apache.commons:commons-compress:1.28.0")
     implementation("commons-io:commons-io:2.20.0")
     implementation("com.github.virtuald:curvesapi:1.08")
+    implementation("androidx.appcompat:appcompat:1.7.0")
 }

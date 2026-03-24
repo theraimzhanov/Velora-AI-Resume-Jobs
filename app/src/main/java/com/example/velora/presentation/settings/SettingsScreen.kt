@@ -23,7 +23,6 @@ import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -49,8 +48,8 @@ import com.example.velora.presentation.ui.SoftCard
 fun SettingsScreen(
     darkMode: Boolean,
     onDarkModeChange: (Boolean) -> Unit,
-    selectedLanguage: String,
-    onLanguageSelected: (String, String) -> Unit
+    selectedLanguageCode: String,
+    onLanguageSelected: (String) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -58,6 +57,12 @@ fun SettingsScreen(
     var showAboutDialog by remember { mutableStateOf(false) }
 
     val supportEmail = "raimjanovnursultan@gmail.com"
+
+    val currentLanguageText = when (selectedLanguageCode) {
+        "ru" -> "Русский"
+        "es" -> "Español"
+        else -> "English"
+    }
 
     SoftBackground {
         Column(
@@ -73,9 +78,7 @@ fun SettingsScreen(
             SettingsSectionTitle(stringResource(R.string.appearance))
             Spacer(modifier = Modifier.height(8.dp))
 
-            SoftCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            SoftCard(modifier = Modifier.fillMaxWidth()) {
                 SettingSwitchItem(
                     icon = {
                         Icon(
@@ -99,9 +102,7 @@ fun SettingsScreen(
             SettingsSectionTitle(stringResource(R.string.preferences))
             Spacer(modifier = Modifier.height(8.dp))
 
-            SoftCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            SoftCard(modifier = Modifier.fillMaxWidth()) {
                 SettingClickableItem(
                     icon = {
                         Icon(
@@ -110,7 +111,7 @@ fun SettingsScreen(
                         )
                     },
                     title = stringResource(R.string.language),
-                    subtitle = stringResource(R.string.current, selectedLanguage),
+                    subtitle = stringResource(R.string.current, currentLanguageText),
                     onClick = { showLanguageDialog = true }
                 )
             }
@@ -120,9 +121,7 @@ fun SettingsScreen(
             SettingsSectionTitle(stringResource(R.string.information))
             Spacer(modifier = Modifier.height(8.dp))
 
-            SoftCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            SoftCard(modifier = Modifier.fillMaxWidth()) {
                 SettingClickableItem(
                     icon = {
                         Icon(
@@ -141,9 +140,7 @@ fun SettingsScreen(
             SettingsSectionTitle(stringResource(R.string.help))
             Spacer(modifier = Modifier.height(8.dp))
 
-            SoftCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            SoftCard(modifier = Modifier.fillMaxWidth()) {
                 SettingClickableItem(
                     icon = {
                         Icon(
@@ -158,8 +155,10 @@ fun SettingsScreen(
                             Intent.ACTION_SENDTO,
                             Uri.parse("mailto:$supportEmail")
                         ).apply {
-                            putExtra(Intent.EXTRA_SUBJECT,
-                                context.getString(R.string.velora_support))
+                            putExtra(
+                                Intent.EXTRA_SUBJECT,
+                                context.getString(R.string.velora_support)
+                            )
                         }
 
                         runCatching {
@@ -174,9 +173,9 @@ fun SettingsScreen(
 
         if (showLanguageDialog) {
             LanguageDialog(
-                selectedLanguage = selectedLanguage,
-                onSelect = { name, code ->
-                    onLanguageSelected(name, code)
+                selectedLanguageCode = selectedLanguageCode,
+                onSelect = { code ->
+                    onLanguageSelected(code)
                     showLanguageDialog = false
                 },
                 onDismiss = { showLanguageDialog = false }
@@ -322,23 +321,15 @@ private fun SettingClickableItem(
 }
 
 @Composable
-private fun DividerSpacer() {
-    HorizontalDivider(
-        modifier = Modifier.padding(vertical = 6.dp),
-        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.18f)
-    )
-}
-
-@Composable
 private fun LanguageDialog(
-    selectedLanguage: String,
-    onSelect: (String, String) -> Unit,
+    selectedLanguageCode: String,
+    onSelect: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
     val languages = listOf(
         "English" to "en",
-        "Russian" to "ru",
-        "Spanish" to "es"
+        "Русский" to "ru",
+        "Español" to "es"
     )
 
     AlertDialog(
@@ -351,9 +342,9 @@ private fun LanguageDialog(
             ) {
                 languages.forEach { (name, code) ->
                     Surface(
-                        onClick = { onSelect(name, code) },
+                        onClick = { onSelect(code) },
                         shape = MaterialTheme.shapes.large,
-                        color = if (selectedLanguage == name) {
+                        color = if (selectedLanguageCode == code) {
                             MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)
                         } else {
                             MaterialTheme.colorScheme.surface
@@ -370,7 +361,7 @@ private fun LanguageDialog(
                                 modifier = Modifier.weight(1f)
                             )
 
-                            if (selectedLanguage == name) {
+                            if (selectedLanguageCode == code) {
                                 Text(
                                     text = stringResource(R.string.selected),
                                     color = MaterialTheme.colorScheme.primary

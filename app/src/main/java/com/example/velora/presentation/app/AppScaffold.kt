@@ -56,8 +56,8 @@ fun AppScaffold(
     authState: AuthState,
     darkMode: Boolean,
     onDarkModeChange: (Boolean) -> Unit,
-    selectedLanguage: String,
-    onLanguageSelected: (String, String) -> Unit,
+    selectedLanguageCode: String,
+    onLanguageSelected: (String) -> Unit,
     onLogout: () -> Unit
 ) {
     val nav = rememberNavController()
@@ -135,7 +135,7 @@ fun AppScaffold(
                         IconButton(onClick = { nav.popBackStack() }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                                contentDescription = "Back"
+                                contentDescription = null
                             )
                         }
                     }
@@ -145,7 +145,7 @@ fun AppScaffold(
                         IconButton(onClick = { menuExpanded = true }) {
                             Icon(
                                 imageVector = Icons.Rounded.MoreVert,
-                                contentDescription = "Menu"
+                                contentDescription = null
                             )
                         }
 
@@ -162,7 +162,10 @@ fun AppScaffold(
                                     }
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Rounded.Settings, contentDescription = null)
+                                    Icon(
+                                        imageVector = Icons.Rounded.Settings,
+                                        contentDescription = null
+                                    )
                                 }
                             )
 
@@ -173,7 +176,10 @@ fun AppScaffold(
                                     showLogoutDialog = true
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Rounded.Logout, contentDescription = null)
+                                    Icon(
+                                        imageVector = Icons.Rounded.Logout,
+                                        contentDescription = null
+                                    )
                                 }
                             )
                         }
@@ -239,7 +245,7 @@ fun AppScaffold(
                 SettingsScreen(
                     darkMode = darkMode,
                     onDarkModeChange = onDarkModeChange,
-                    selectedLanguage = selectedLanguage,
+                    selectedLanguageCode = selectedLanguageCode,
                     onLanguageSelected = onLanguageSelected
                 )
             }

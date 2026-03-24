@@ -20,9 +20,10 @@ fun VeloraNavHost(
     modifier: Modifier = Modifier,
     darkMode: Boolean,
     onDarkModeChange: (Boolean) -> Unit,
-    selectedLanguage: String,
-    onLanguageSelected: (String, String) -> Unit
+    selectedLanguageCode: String,
+    onLanguageSelected: (String) -> Unit
 ) {
+
     val nav = rememberNavController()
 
     val authVm: AuthViewModel = hiltViewModel()
@@ -34,23 +35,28 @@ fun VeloraNavHost(
     var splashNavigated by remember { mutableStateOf(false) }
 
     fun goNextFromSplash() {
+
         if (splashNavigated) return
         splashNavigated = true
 
         if (!introDone) {
+
             nav.navigate(Destinations.ONBOARDING) {
                 popUpTo(Destinations.SPLASH) { inclusive = true }
                 launchSingleTop = true
             }
+
             return
         }
 
         when (authState) {
+
             AuthState.Loading -> {
                 splashNavigated = false
             }
 
             AuthState.SignedOut -> {
+
                 nav.navigate(Destinations.AUTH_GRAPH) {
                     popUpTo(0) { inclusive = true }
                     launchSingleTop = true
@@ -58,6 +64,7 @@ fun VeloraNavHost(
             }
 
             is AuthState.SignedIn -> {
+
                 nav.navigate(Destinations.APP_GRAPH) {
                     popUpTo(0) { inclusive = true }
                     launchSingleTop = true
@@ -71,11 +78,14 @@ fun VeloraNavHost(
         startDestination = Destinations.INTRO_GRAPH,
         modifier = modifier
     ) {
+
         navigation(
             startDestination = Destinations.SPLASH,
             route = Destinations.INTRO_GRAPH
         ) {
+
             composable(Destinations.SPLASH) {
+
                 LaunchedEffect(Unit) {
                     splashNavigated = false
                 }
@@ -88,12 +98,16 @@ fun VeloraNavHost(
             }
 
             composable(Destinations.ONBOARDING) {
+
                 OnboardingScreen(
                     onFinish = {
+
                         introVm.finishIntro()
 
                         when (authState) {
+
                             is AuthState.SignedIn -> {
+
                                 nav.navigate(Destinations.APP_GRAPH) {
                                     popUpTo(Destinations.INTRO_GRAPH) { inclusive = true }
                                     launchSingleTop = true
@@ -102,6 +116,7 @@ fun VeloraNavHost(
 
                             AuthState.SignedOut,
                             AuthState.Loading -> {
+
                                 nav.navigate(Destinations.AUTH_GRAPH) {
                                     popUpTo(Destinations.INTRO_GRAPH) { inclusive = true }
                                     launchSingleTop = true
@@ -117,7 +132,9 @@ fun VeloraNavHost(
             startDestination = Destinations.LOGIN,
             route = Destinations.AUTH_GRAPH
         ) {
+
             composable(Destinations.LOGIN) {
+
                 LoginScreen(
                     onGoRegister = { nav.navigate(Destinations.REGISTER) },
                     onGoForgotPassword = { nav.navigate(Destinations.FORGOT_PASSWORD) }
@@ -125,12 +142,14 @@ fun VeloraNavHost(
             }
 
             composable(Destinations.REGISTER) {
+
                 RegisterScreen(
                     onGoLogin = { nav.popBackStack() }
                 )
             }
 
             composable(Destinations.FORGOT_PASSWORD) {
+
                 ForgotPasswordScreen(
                     onBack = { nav.popBackStack() }
                 )
@@ -141,13 +160,18 @@ fun VeloraNavHost(
             startDestination = Destinations.APP_SHELL,
             route = Destinations.APP_GRAPH
         ) {
+
             composable(Destinations.APP_SHELL) {
+
                 AppScaffold(
                     authState = authState,
+
                     darkMode = darkMode,
                     onDarkModeChange = onDarkModeChange,
-                    selectedLanguage = selectedLanguage,
+
+                    selectedLanguageCode = selectedLanguageCode,
                     onLanguageSelected = onLanguageSelected,
+
                     onLogout = { authVm.logout() }
                 )
             }
@@ -155,16 +179,25 @@ fun VeloraNavHost(
     }
 
     LaunchedEffect(authState, introDone) {
+
         if (!introDone) return@LaunchedEffect
 
-        val currentRoute = nav.currentBackStackEntry?.destination?.route
+        val currentRoute =
+            nav.currentBackStackEntry?.destination?.route
 
         when (authState) {
+
             AuthState.Loading -> Unit
 
             AuthState.SignedOut -> {
-                if (currentRoute != Destinations.LOGIN && currentRoute != Destinations.REGISTER) {
+
+                if (
+                    currentRoute != Destinations.LOGIN &&
+                    currentRoute != Destinations.REGISTER
+                ) {
+
                     nav.navigate(Destinations.AUTH_GRAPH) {
+
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }
@@ -172,8 +205,11 @@ fun VeloraNavHost(
             }
 
             is AuthState.SignedIn -> {
+
                 if (currentRoute != Destinations.APP_SHELL) {
+
                     nav.navigate(Destinations.APP_GRAPH) {
+
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }
