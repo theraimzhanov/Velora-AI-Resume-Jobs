@@ -66,28 +66,6 @@ fun VeloraCard(
 }
 
 @Composable
-fun VeloraTextField(
-    value: String,
-    label: String,
-    onValueChange: (String) -> Unit,
-    password: Boolean = false,
-    modifier: Modifier = Modifier
-) {
-    val t = Velora.tokens
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        singleLine = true,
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(t.radius.lg),
-        visualTransformation = if (password)
-            androidx.compose.ui.text.input.PasswordVisualTransformation()
-        else androidx.compose.ui.text.input.VisualTransformation.None
-    )
-}
-
-@Composable
 fun VeloraButton(
     text: String,
     enabled: Boolean,

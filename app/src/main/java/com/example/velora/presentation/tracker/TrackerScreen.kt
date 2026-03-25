@@ -124,15 +124,6 @@ fun TrackerScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-             /*   item {
-                    Text(
-                        text = "Track Your\nApplications",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF171A22)
-                    )
-                }*/
-
                 item {
                     TrackerHeroCard(
                         total = total,

@@ -14,7 +14,6 @@ object Destinations {
     const val APP_SHELL = "app_shell"
     const val TRACKER = "tracker"
     const val RESUME = "resume"
-    const val PROFILE = "profile"
     const val SETTINGS = "settings"
     const val FORGOT_PASSWORD = "forgot_password"
 }

@@ -31,7 +31,7 @@ fun SplashScreen(
 
     LaunchedEffect(Unit) {
         startAnimation = true
-        delay(2200) // change this if you want longer/shorter splash
+        delay(2200)
         onFinish()
     }
 

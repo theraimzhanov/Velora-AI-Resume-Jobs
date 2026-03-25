@@ -8,10 +8,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 fun String.clean(): String = trim()
 fun String.isValidEmail(): Boolean = Patterns.EMAIL_ADDRESS.matcher(this.trim()).matches()
 
-fun NavController.navigateSingleTop(route: String) {
-    navigate(route) { launchSingleTop = true }
-}
-
 class UiEvents<E> {
     private val channel = Channel<E>(capacity = Channel.BUFFERED)
     val flow = channel.receiveAsFlow()

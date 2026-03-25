@@ -23,8 +23,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
+import com.example.velora.R
 import com.example.velora.presentation.ui.SoftCard
 
 @Composable
@@ -69,7 +71,7 @@ fun NoInternetScreen(
                 Spacer(modifier = Modifier.height(18.dp))
 
                 Text(
-                    text = "No internet connection",
+                    text = stringResource(R.string.no_internet_connection),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
@@ -77,7 +79,7 @@ fun NoInternetScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Velora needs an internet connection to load your applications, resume audit, and account data.",
+                    text = stringResource(R.string.connection),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f)
                 )
@@ -96,7 +98,7 @@ fun NoInternetScreen(
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.height(0.dp))
-                    Text("Try again")
+                    Text(stringResource(R.string.try_again))
                 }
             }
         }

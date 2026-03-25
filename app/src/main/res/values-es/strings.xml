@@ -20,7 +20,9 @@
     <string name="skip">Omitir</string>
     <string name="get_started">Comenzar</string>
     <string name="next">Siguiente</string>
-
+    <string name="no_internet_connection">Sin conexión a Internet</string>
+    <string name="connection">Velora necesita conexión a Internet para cargar tus aplicaciones, analizar el currículum y obtener los datos de la cuenta.</string>
+    <string name="try_again">Intentar de nuevo</string>
     <string name="already_have_an_account">¿Ya tienes una cuenta?</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
     <string name="enter_email">Ingresa tu correo y te enviaremos un enlace para restablecerla.</string>

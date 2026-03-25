@@ -39,7 +39,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.velora.R
 import com.example.velora.domain.auth.AuthState
 import com.example.velora.navigation.Destinations
-import com.example.velora.presentation.profile.ProfileScreen
 import com.example.velora.presentation.resume.ResumeScreen
 import com.example.velora.presentation.settings.SettingsScreen
 import com.example.velora.presentation.tracker.TrackerScreen
@@ -90,7 +89,6 @@ fun AppScaffold(
     val topBarTitle = when (currentRoute) {
         Destinations.TRACKER -> "Velora"
         Destinations.RESUME -> stringResource(R.string.resume_checker)
-        Destinations.PROFILE -> stringResource(R.string.profile)
         Destinations.SETTINGS -> stringResource(R.string.settings)
         else -> "Velora"
     }
@@ -233,14 +231,6 @@ fun AppScaffold(
             composable(Destinations.RESUME) {
                 ResumeScreen()
             }
-
-            composable(Destinations.PROFILE) {
-                ProfileScreen(
-                    authState = authState,
-                    onLogout = onLogout
-                )
-            }
-
             composable(Destinations.SETTINGS) {
                 SettingsScreen(
                     darkMode = darkMode,
