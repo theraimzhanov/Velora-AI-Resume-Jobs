@@ -10,15 +10,13 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.example.velora.core.language.LocaleManager
 import com.example.velora.data.local.SettingsPreferences
-import com.example.velora.navigation.VeloraNavHost
+import com.example.velora.presentation.app.VeloraRoot
 import com.example.velora.ui.tokens.VeloraTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -43,31 +41,27 @@ class MainActivity : AppCompatActivity() {
 
             VeloraTheme(darkTheme = darkMode) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    Scaffold(
-                        modifier = Modifier.fillMaxSize()
-                    ) { innerPadding ->
-                        VeloraNavHost(
-                            modifier = Modifier.padding(innerPadding),
-                            darkMode = darkMode,
-                            onDarkModeChange = { enabled ->
-                                lifecycleScope.launch {
-                                    settingsPrefs.setDarkMode(enabled)
-                                }
-                            },
-                            selectedLanguageCode = languageCode,
-                            onLanguageSelected = { code ->
-                                if (code == LocaleManager.currentLanguageCode()) {
-                                    return@VeloraNavHost
-                                }
 
-                                lifecycleScope.launch {
-                                    showLocaleOverlay = true
-                                    delay(120)
-                                    LocaleManager.applyAppLocale(code)
-                                }
+                    VeloraRoot(
+                        darkMode = darkMode,
+                        onDarkModeChange = { enabled ->
+                            lifecycleScope.launch {
+                                settingsPrefs.setDarkMode(enabled)
                             }
-                        )
-                    }
+                        },
+                        selectedLanguageCode = languageCode,
+                        onLanguageSelected = { code ->
+                            if (code == LocaleManager.currentLanguageCode()) {
+                                return@VeloraRoot
+                            }
+
+                            lifecycleScope.launch {
+                                showLocaleOverlay = true
+                                delay(120)
+                                LocaleManager.applyAppLocale(code)
+                            }
+                        }
+                    )
 
                     AnimatedVisibility(
                         visible = showLocaleOverlay,
