@@ -9,13 +9,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.velora"
+    namespace = "com.velora.mobile"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.example.velora"
+        applicationId = "com.velora.mobile"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

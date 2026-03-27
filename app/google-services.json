@@ -1,41 +1,33 @@
 {
   "project_info": {
-    "project_number": "21317757620",
-    "project_id": "velora-ccf3e",
-    "storage_bucket": "velora-ccf3e.firebasestorage.app"
+    "project_number": "164406289424",
+    "project_id": "velora-5bff4",
+    "storage_bucket": "velora-5bff4.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:21317757620:android:b02c67e205bed46ee445e1",
+        "mobilesdk_app_id": "1:164406289424:android:10662af6d39dec2961d695",
         "android_client_info": {
-          "package_name": "com.example.velora"
+          "package_name": "com.velora.mobile"
         }
       },
       "oauth_client": [
         {
-          "client_id": "21317757620-g5eod8k8c8n20o9olq19dcf1iqoedojk.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.velora",
-            "certificate_hash": "c69ffa025a927402c9526609f9f81205a3a8bf22"
-          }
-        },
-        {
-          "client_id": "21317757620-240md7000iidrk883g0lbick91skn86r.apps.googleusercontent.com",
+          "client_id": "164406289424-0mpnehp1eiomdon6dtk5qdbas9d2h7ae.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCQxRfG3pm_YshToZOdXWKEunqtNX4EBUU"
+          "current_key": "AIzaSyDcKYizsY7nubmotgd5Ugpsp76xMQ1lUew"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "21317757620-240md7000iidrk883g0lbick91skn86r.apps.googleusercontent.com",
+              "client_id": "164406289424-0mpnehp1eiomdon6dtk5qdbas9d2h7ae.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
