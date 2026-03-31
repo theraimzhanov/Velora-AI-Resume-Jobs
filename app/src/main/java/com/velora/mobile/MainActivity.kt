@@ -1,5 +1,6 @@
 package com.velora.mobile
 
+import VeloraRoot
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -15,45 +16,29 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.velora.mobile.core.language.LocaleManager
-import com.velora.mobile.data.local.SettingsPreferences
-import com.velora.mobile.presentation.app.VeloraRoot
 import com.velora.mobile.ui.tokens.VeloraTheme
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var settingsPrefs: SettingsPreferences
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         setContent {
-            val darkMode by settingsPrefs.darkModeFlow.collectAsState(initial = false)
             val languageCode = LocaleManager.currentLanguageCode()
-
             var showLocaleOverlay by remember { mutableStateOf(false) }
 
-            VeloraTheme(darkTheme = darkMode) {
+            VeloraTheme {
                 Box(modifier = Modifier.fillMaxSize()) {
 
                     VeloraRoot(
-                        darkMode = darkMode,
-                        onDarkModeChange = { enabled ->
-                            lifecycleScope.launch {
-                                settingsPrefs.setDarkMode(enabled)
-                            }
-                        },
                         selectedLanguageCode = languageCode,
                         onLanguageSelected = { code ->
-                            if (code == LocaleManager.currentLanguageCode()) {
-                                return@VeloraRoot
-                            }
+                            if (code == LocaleManager.currentLanguageCode()) return@VeloraRoot
 
                             lifecycleScope.launch {
                                 showLocaleOverlay = true

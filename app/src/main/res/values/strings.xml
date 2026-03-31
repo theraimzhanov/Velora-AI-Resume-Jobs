@@ -120,6 +120,8 @@
     <string name="no_internet_connection">No internet connection</string>
     <string name="connection">Velora needs an internet connection to load your applications, resume audit, and account data.</string>
     <string name="try_again">Try again</string>
+    <string name="app_theme">App theme</string>
+    <string name="follows_phone_mode">Follows phone mode</string>
 
 
 </resources>

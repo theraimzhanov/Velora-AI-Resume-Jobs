@@ -100,7 +100,8 @@ Dejar vacío para usar el idioma de la app: %1$s
 
     <string name="format">Formato: %1$s</string>
     <string name="length">Longitud: %1$s</string>
-
+    <string name="app_theme">Tema de la aplicación</string>
+    <string name="follows_phone_mode">Sigue el modo del sistema</string>
     <string name="skills_gap">Falta de habilidades</string>
     <string name="current_skills_vs_missing_ones">
 Habilidades actuales vs habilidades faltantes.

@@ -88,7 +88,7 @@ fun OnboardingScreen(
                     onClick = onFinish,
                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                 ) {
-                    Text(stringResource(R.string.skip), color = Color.Black.copy(alpha = 0.45f))
+                    Text(stringResource(R.string.skip), color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f))
                 }
             }
 
@@ -143,7 +143,7 @@ fun OnboardingScreen(
             ) {
                 Text(
                     stringResource(R.string.already_have_an_account),
-                    color = Color.Black.copy(alpha = 0.55f),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f),
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -191,7 +191,7 @@ private fun OnboardingPageCard(page: IntroPage) {
         Text(
             text = page.subtitle,
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.Black.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f),
             lineHeight = 22.sp
         )
 

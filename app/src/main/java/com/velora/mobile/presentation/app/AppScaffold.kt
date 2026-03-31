@@ -53,8 +53,6 @@ private data class Tab(
 @Composable
 fun AppScaffold(
     authState: AuthState,
-    darkMode: Boolean,
-    onDarkModeChange: (Boolean) -> Unit,
     selectedLanguageCode: String,
     onLanguageSelected: (String) -> Unit,
     onLogout: () -> Unit
@@ -233,8 +231,6 @@ fun AppScaffold(
             }
             composable(Destinations.SETTINGS) {
                 SettingsScreen(
-                    darkMode = darkMode,
-                    onDarkModeChange = onDarkModeChange,
                     selectedLanguageCode = selectedLanguageCode,
                     onLanguageSelected = onLanguageSelected
                 )

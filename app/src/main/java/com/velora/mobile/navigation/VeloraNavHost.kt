@@ -18,8 +18,6 @@ import com.velora.mobile.R
 @Composable
 fun VeloraNavHost(
     modifier: Modifier = Modifier,
-    darkMode: Boolean,
-    onDarkModeChange: (Boolean) -> Unit,
     selectedLanguageCode: String,
     onLanguageSelected: (String) -> Unit
 ) {
@@ -165,10 +163,6 @@ fun VeloraNavHost(
 
                 AppScaffold(
                     authState = authState,
-
-                    darkMode = darkMode,
-                    onDarkModeChange = onDarkModeChange,
-
                     selectedLanguageCode = selectedLanguageCode,
                     onLanguageSelected = onLanguageSelected,
 

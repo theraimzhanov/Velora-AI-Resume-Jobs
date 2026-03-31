@@ -46,8 +46,6 @@ import com.velora.mobile.presentation.ui.SoftCard
 
 @Composable
 fun SettingsScreen(
-    darkMode: Boolean,
-    onDarkModeChange: (Boolean) -> Unit,
     selectedLanguageCode: String,
     onLanguageSelected: (String) -> Unit
 ) {
@@ -79,21 +77,16 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             SoftCard(modifier = Modifier.fillMaxWidth()) {
-                SettingSwitchItem(
+                SettingClickableItem(
                     icon = {
                         Icon(
-                            imageVector = if (darkMode) Icons.Rounded.DarkMode else Icons.Rounded.LightMode,
+                            imageVector = Icons.Rounded.DarkMode,
                             contentDescription = null
                         )
                     },
-                    title = stringResource(R.string.dark_mode),
-                    subtitle = if (darkMode) {
-                        stringResource(R.string.extr1)
-                    } else {
-                        stringResource(R.string.extr2)
-                    },
-                    checked = darkMode,
-                    onCheckedChange = onDarkModeChange
+                    title = stringResource(R.string.app_theme),
+                    subtitle = stringResource(R.string.follows_phone_mode),
+                    onClick = { }
                 )
             }
 

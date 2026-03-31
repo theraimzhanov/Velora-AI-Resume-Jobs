@@ -10,8 +10,10 @@
     <string name="selected">Выбрано</string>
     <string name="close">Закрыть</string>
     <string name="yes">Да</string>
-    <string name="information">информация</string>
+    <string name="information">Информация</string>
     <string name="no">Нет</string>
+    <string name="app_theme">Тема приложения</string>
+    <string name="follows_phone_mode">Следует системной теме</string>
     <string name="intro1">Умное отслеживание откликов</string>
     <string name="intro1_context">Управляйте каждой заявкой на работу с помощью понятного и организованного процесса.</string>
     <string name="intro2">Синхронизация на всех устройствах</string>

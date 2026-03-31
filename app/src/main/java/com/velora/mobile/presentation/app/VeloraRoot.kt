@@ -1,5 +1,3 @@
-package com.velora.mobile.presentation.app
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,8 +14,6 @@ import com.velora.mobile.presentation.network.NoInternetScreen
 
 @Composable
 fun VeloraRoot(
-    darkMode: Boolean,
-    onDarkModeChange: (Boolean) -> Unit,
     selectedLanguageCode: String,
     onLanguageSelected: (String) -> Unit
 ) {
@@ -35,8 +31,6 @@ fun VeloraRoot(
             ) { innerPadding ->
                 VeloraNavHost(
                     modifier = Modifier.padding(innerPadding),
-                    darkMode = darkMode,
-                    onDarkModeChange = onDarkModeChange,
                     selectedLanguageCode = selectedLanguageCode,
                     onLanguageSelected = onLanguageSelected
                 )

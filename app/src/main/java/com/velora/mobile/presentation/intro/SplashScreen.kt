@@ -83,7 +83,7 @@ fun SplashScreen(
             Text(
                 text = slogan,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Black.copy(alpha = 0.55f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
             )
         }
     }

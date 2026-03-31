@@ -88,8 +88,12 @@ fun TrackerScreen(
         it.status.equals(ApplicationStatus.Offer.name, ignoreCase = true)
     }
 
-    val interviewRate = if (total == 0) 0 else ((interviews.toFloat() / total.toFloat()) * 100f).toInt()
-    val offerRate = if (total == 0) 0 else ((offers.toFloat() / total.toFloat()) * 100f).toInt()
+    val interviewRate = if (total == 0) 0 else ((interviews.toFloat() / total) * 100).toInt()
+    val offerRate = if (total == 0) 0 else ((offers.toFloat() / total) * 100).toInt()
+
+    val accentBlue = Color(0xFF5C96F5)
+    val fabContainer = Color(0xFFBFDDFB)
+    val fabContent = Color(0xFF3277D8)
 
     SoftBackground {
         Scaffold(
@@ -98,8 +102,8 @@ fun TrackerScreen(
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = { addSheetOpen = true },
-                    containerColor = Color(0xFFBFDDFB),
-                    contentColor = Color(0xFF3277D8)
+                    containerColor = fabContainer,
+                    contentColor = fabContent
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Add,
@@ -124,7 +128,8 @@ fun TrackerScreen(
                     TrackerHeroCard(
                         total = total,
                         interviews = interviews,
-                        offers = offers
+                        offers = offers,
+                        accentBlue = accentBlue
                     )
                 }
 
@@ -141,7 +146,7 @@ fun TrackerScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight(),
-                            containerColor = Color(0xFFF7F1EA)
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
                         )
 
                         StatMiniCard(
@@ -150,7 +155,7 @@ fun TrackerScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight(),
-                            containerColor = Color(0xFFF2F4FB)
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.40f)
                         )
 
                         StatMiniCard(
@@ -159,7 +164,7 @@ fun TrackerScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight(),
-                            containerColor = Color(0xFFF2F4FB)
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.40f)
                         )
                     }
                 }
@@ -167,7 +172,8 @@ fun TrackerScreen(
                 item {
                     PremiumSectionHeader(
                         title = stringResource(R.string.saved),
-                        subtitle = "(${ui.jobs.size})"
+                        subtitle = "(${ui.jobs.size})",
+                        accentBlue = accentBlue
                     )
                 }
 
@@ -190,7 +196,10 @@ fun TrackerScreen(
                     ui.jobs.isEmpty() -> {
                         item {
                             EmptyTrackerCard(
-                                onAddClick = { addSheetOpen = true }
+                                onAddClick = { addSheetOpen = true },
+                                accentBlue = accentBlue,
+                                buttonContainer = fabContainer,
+                                buttonContent = fabContent
                             )
                         }
                     }
@@ -219,22 +228,14 @@ fun TrackerScreen(
             AddApplicationSheet(
                 onAdd = { company, position, status ->
                     vm.add(company, position, status)
-
-                    scope.launch {
-                        addSheetState.hide()
-                    }.invokeOnCompletion {
-                        addSheetOpen = false
-                    }
+                    scope.launch { addSheetState.hide() }
+                        .invokeOnCompletion { addSheetOpen = false }
                 },
                 onClose = {
-                    scope.launch {
-                        addSheetState.hide()
-                    }.invokeOnCompletion {
-                        addSheetOpen = false
-                    }
+                    scope.launch { addSheetState.hide() }
+                        .invokeOnCompletion { addSheetOpen = false }
                 }
             )
-
             Spacer(modifier = Modifier.height(18.dp))
         }
     }
@@ -248,31 +249,19 @@ fun TrackerScreen(
                 job = job,
                 onStatusChange = { newStatus ->
                     vm.setStatus(job.id, newStatus)
-
-                    scope.launch {
-                        actionSheetState.hide()
-                    }.invokeOnCompletion {
-                        selectedJob = null
-                    }
+                    scope.launch { actionSheetState.hide() }
+                        .invokeOnCompletion { selectedJob = null }
                 },
                 onDelete = {
                     vm.delete(job.id)
-
-                    scope.launch {
-                        actionSheetState.hide()
-                    }.invokeOnCompletion {
-                        selectedJob = null
-                    }
+                    scope.launch { actionSheetState.hide() }
+                        .invokeOnCompletion { selectedJob = null }
                 },
                 onClose = {
-                    scope.launch {
-                        actionSheetState.hide()
-                    }.invokeOnCompletion {
-                        selectedJob = null
-                    }
+                    scope.launch { actionSheetState.hide() }
+                        .invokeOnCompletion { selectedJob = null }
                 }
             )
-
             Spacer(modifier = Modifier.height(18.dp))
         }
     }
@@ -282,24 +271,23 @@ fun TrackerScreen(
 private fun TrackerHeroCard(
     total: Int,
     interviews: Int,
-    offers: Int
+    offers: Int,
+    accentBlue: Color
 ) {
     val goal = 20
-    val progress = (total.toFloat() / goal.toFloat()).coerceIn(0f, 1f)
+    val progress = (total.toFloat() / goal).coerceIn(0f, 1f)
 
     SoftCard(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(18.dp),
-        containerColor = Color(0xFFF6F8FD)
+        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = stringResource(R.string.your_job_search),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF171A22)
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(6.dp))
@@ -312,7 +300,7 @@ private fun TrackerHeroCard(
                     else -> stringResource(R.string.tr_4)
                 },
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFF667085)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(18.dp))
@@ -320,7 +308,7 @@ private fun TrackerHeroCard(
             Text(
                 text = stringResource(R.string.goal_progress),
                 style = MaterialTheme.typography.labelLarge,
-                color = Color(0xFF344054),
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.SemiBold
             )
 
@@ -332,8 +320,8 @@ private fun TrackerHeroCard(
                     .fillMaxWidth()
                     .height(8.dp)
                     .clip(RoundedCornerShape(999.dp)),
-                color = Color(0xFF5C96F5),
-                trackColor = Color.White
+                color = accentBlue,
+                trackColor = MaterialTheme.colorScheme.surface
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -341,12 +329,11 @@ private fun TrackerHeroCard(
             Text(
                 text = stringResource(R.string.of_applications_target, total, goal),
                 style = MaterialTheme.typography.bodySmall,
-                color = Color(0xFF98A2B3)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
 }
-
 
 @Composable
 private fun StatMiniCard(
@@ -371,7 +358,7 @@ private fun StatMiniCard(
                 text = value,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF171A22),
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1
             )
 
@@ -380,7 +367,7 @@ private fun StatMiniCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color(0xFF667085),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
                 minLines = 2,
                 overflow = TextOverflow.Ellipsis
@@ -388,15 +375,17 @@ private fun StatMiniCard(
         }
     }
 }
+
 @Composable
 private fun PremiumSectionHeader(
     title: String,
-    subtitle: String
+    subtitle: String,
+    accentBlue: Color
 ) {
     SoftCard(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
-        containerColor = Color(0xFFF7F7FB)
+        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.40f)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -406,13 +395,13 @@ private fun PremiumSectionHeader(
                 modifier = Modifier
                     .size(34.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFE9F2FF)),
+                    .background(accentBlue.copy(alpha = 0.15f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Bookmark,
                     contentDescription = null,
-                    tint = Color(0xFF5C96F5),
+                    tint = accentBlue,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -423,7 +412,7 @@ private fun PremiumSectionHeader(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF171A22)
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.width(6.dp))
@@ -431,19 +420,18 @@ private fun PremiumSectionHeader(
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFF98A2B3)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
 }
+
 @Composable
 private fun PremiumJobCard(
     job: JobApplication,
     onClick: () -> Unit
 ) {
     val status = ApplicationStatus.fromName(job.status)
-    val companyAccent = companyAccent(job.company)
-
     SoftCard(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(14.dp),
@@ -455,17 +443,13 @@ private fun PremiumJobCard(
         ) {
             CompanyBadge(
                 company = job.company,
-                accent = companyAccent
+                accent = MaterialTheme.colorScheme.primary
             )
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = if (job.company.isBlank()) stringResource(R.string.no_company) else job.company,
                         style = MaterialTheme.typography.titleLarge,
@@ -484,7 +468,7 @@ private fun PremiumJobCard(
                 Text(
                     text = if (job.position.isBlank()) stringResource(R.string.unknown_position) else job.position,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color(0xFF344054),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -494,7 +478,7 @@ private fun PremiumJobCard(
                 Text(
                     text = formatApplicationDate(job.createdAt),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF98A2B3)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f)
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -576,7 +560,7 @@ private fun PremiumProgressRow(status: ApplicationStatus) {
                 .height(7.dp)
                 .clip(RoundedCornerShape(999.dp)),
             color = color,
-            trackColor = Color(0xFFF0F2F6)
+            trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
         )
 
         Spacer(modifier = Modifier.height(6.dp))
@@ -589,14 +573,17 @@ private fun PremiumProgressRow(status: ApplicationStatus) {
                 ApplicationStatus.Rejected -> stringResource(R.string.process_closed)
             },
             style = MaterialTheme.typography.bodySmall,
-            color = Color(0xFF98A2B3)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
 
 @Composable
 private fun EmptyTrackerCard(
-    onAddClick: () -> Unit
+    onAddClick: () -> Unit,
+    accentBlue: Color,
+    buttonContainer: Color,
+    buttonContent: Color
 ) {
     SoftCard(
         modifier = Modifier.fillMaxWidth(),
@@ -610,13 +597,13 @@ private fun EmptyTrackerCard(
                 modifier = Modifier
                     .size(58.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFEAF2FF)),
+                    .background(accentBlue.copy(alpha = 0.14f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Business,
                     contentDescription = null,
-                    tint = Color(0xFF5C96F5)
+                    tint = accentBlue
                 )
             }
 
@@ -625,7 +612,8 @@ private fun EmptyTrackerCard(
             Text(
                 text = stringResource(R.string.no_applications_yet),
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -633,7 +621,7 @@ private fun EmptyTrackerCard(
             Text(
                 text = stringResource(R.string.tracker),
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFF667085)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -642,8 +630,8 @@ private fun EmptyTrackerCard(
                 onClick = onAddClick,
                 shape = RoundedCornerShape(18.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFBFDDFB),
-                    contentColor = Color(0xFF3277D8)
+                    containerColor = buttonContainer,
+                    contentColor = buttonContent
                 )
             ) {
                 Icon(Icons.Rounded.Add, contentDescription = null)
@@ -656,6 +644,8 @@ private fun EmptyTrackerCard(
 
 @Composable
 private fun PremiumTrackerSkeleton() {
+    val skeletonColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
+
     SoftCard(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(14.dp)
@@ -665,20 +655,18 @@ private fun PremiumTrackerSkeleton() {
                 modifier = Modifier
                     .size(52.dp)
                     .clip(RoundedCornerShape(18.dp))
-                    .background(Color.Black.copy(alpha = 0.05f))
+                    .background(skeletonColor)
             )
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
                         .height(18.dp)
                         .clip(RoundedCornerShape(999.dp))
-                        .background(Color.Black.copy(alpha = 0.05f))
+                        .background(skeletonColor)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -688,7 +676,7 @@ private fun PremiumTrackerSkeleton() {
                         .fillMaxWidth(0.42f)
                         .height(14.dp)
                         .clip(RoundedCornerShape(999.dp))
-                        .background(Color.Black.copy(alpha = 0.04f))
+                        .background(skeletonColor)
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -698,21 +686,9 @@ private fun PremiumTrackerSkeleton() {
                         .fillMaxWidth()
                         .height(7.dp)
                         .clip(RoundedCornerShape(999.dp))
-                        .background(Color.Black.copy(alpha = 0.04f))
+                        .background(skeletonColor)
                 )
             }
         }
-    }
-}
-
-private fun companyAccent(company: String): Color {
-    val key = company.trim().lowercase()
-
-    return when {
-        "google" in key -> Color(0xFF4285F4)
-        "meta" in key -> Color(0xFF1877F2)
-        "netflix" in key -> Color(0xFFE50914)
-        "stripe" in key -> Color(0xFF635BFF)
-        else -> Color(0xFF5C96F5)
     }
 }
