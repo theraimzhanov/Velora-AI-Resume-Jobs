@@ -1,21 +1,18 @@
 package com.velora.mobile.presentation.auth
-import com.velora.mobile.R
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.velora.mobile.R
 
 @Composable
 fun ForgotPasswordScreen(
@@ -39,7 +36,6 @@ fun ForgotPasswordScreen(
                     focusManager.clearFocus()
                     keyboardController?.hide()
                 }
-
                 is AuthEvent.Success -> {
                     message = e.msg
                     isError = false
@@ -69,7 +65,8 @@ fun ForgotPasswordScreen(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -94,11 +91,7 @@ fun ForgotPasswordScreen(
                     Spacer(Modifier.height(10.dp))
                     Text(
                         text = it,
-                        color = if (isError) {
-                            MaterialTheme.colorScheme.error
-                        } else {
-                            Color(0xFF1F9D5A)
-                        }
+                        color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                     )
                 }
 

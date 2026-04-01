@@ -1,6 +1,5 @@
 package com.velora.mobile.presentation.auth
 
-
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,30 +21,41 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun AuthBackground(content: @Composable BoxScope.() -> Unit) {
     Box(
-        Modifier
+        modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF4F4F4))
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Box(
-            Modifier
+            modifier = Modifier
                 .size(460.dp)
                 .align(Alignment.Center)
                 .offset(y = (-30).dp)
-                .background(Color(0xFF2E5E73).copy(alpha = 0.20f), CircleShape)
+                .background(
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
+                    CircleShape
+                )
         )
+
         Box(
-            Modifier
+            modifier = Modifier
                 .size(14.dp)
                 .align(Alignment.TopStart)
                 .offset(x = 22.dp, y = 90.dp)
-                .background(Color(0xFF2E5E73).copy(alpha = 0.45f), CircleShape)
+                .background(
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.40f),
+                    CircleShape
+                )
         )
+
         Box(
-            Modifier
+            modifier = Modifier
                 .size(18.dp)
                 .align(Alignment.BottomEnd)
                 .offset(x = (-26).dp, y = (-120).dp)
-                .background(Color(0xFF2E5E73).copy(alpha = 0.25f), CircleShape)
+                .background(
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.24f),
+                    CircleShape
+                )
         )
 
         content()
@@ -58,23 +68,33 @@ fun AuthCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(26.dp)
+
     Card(
         modifier = modifier
             .clip(shape)
-            .border(1.dp, Color.Black.copy(alpha = 0.06f), shape),
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f),
+                shape = shape
+            ),
         shape = shape,
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column(
-            Modifier.padding(horizontal = 18.dp, vertical = 18.dp),
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 18.dp),
             content = content
         )
     }
 }
 
 @Composable
-fun Hero(@DrawableRes resId: Int, modifier: Modifier = Modifier) {
+fun Hero(
+    @DrawableRes resId: Int,
+    modifier: Modifier = Modifier
+) {
     Image(
         painter = painterResource(resId),
         contentDescription = null,
@@ -86,9 +106,20 @@ fun Hero(@DrawableRes resId: Int, modifier: Modifier = Modifier) {
 
 @Composable
 fun AuthTitle(title: String, subtitle: String) {
-    Text(title, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
-    Spacer(Modifier.height(6.dp))
-    Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = Color.Black.copy(alpha = 0.55f))
+    Text(
+        text = title,
+        style = MaterialTheme.typography.headlineMedium,
+        fontWeight = FontWeight.SemiBold,
+        color = MaterialTheme.colorScheme.onSurface
+    )
+
+    Spacer(modifier = Modifier.height(6.dp))
+
+    Text(
+        text = subtitle,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
 }
 
 @Composable
@@ -98,7 +129,8 @@ fun PillTextField(
     placeholder: String,
     leading: @Composable (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null,
-    visual: androidx.compose.ui.text.input.VisualTransformation = androidx.compose.ui.text.input.VisualTransformation.None,
+    visual: androidx.compose.ui.text.input.VisualTransformation =
+        androidx.compose.ui.text.input.VisualTransformation.None,
 ) {
     val shape: Shape = RoundedCornerShape(999.dp)
 
@@ -107,17 +139,31 @@ fun PillTextField(
         onValueChange = onValueChange,
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
-        placeholder = { Text(placeholder, color = Color.Black.copy(alpha = 0.35f)) },
+        placeholder = {
+            Text(
+                text = placeholder,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
         leadingIcon = leading,
         trailingIcon = trailing,
         visualTransformation = visual,
         shape = shape,
         colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+            disabledTextColor = MaterialTheme.colorScheme.onSurface,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
             focusedBorderColor = Color.Transparent,
             unfocusedBorderColor = Color.Transparent,
-            focusedContainerColor = Color(0xFFF2F2F2),
-            unfocusedContainerColor = Color(0xFFF2F2F2),
-            cursorColor = Color(0xFF2E5E73)
+            disabledBorderColor = Color.Transparent,
+            focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            focusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            cursorColor = MaterialTheme.colorScheme.primary
         )
     )
 }
@@ -131,13 +177,20 @@ fun PrimaryAuthButton(
     Button(
         onClick = onClick,
         enabled = enabled,
-        modifier = Modifier.fillMaxWidth().height(52.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp),
         shape = RoundedCornerShape(999.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF2E5E73),
-            contentColor = Color.White,
-            disabledContainerColor = Color(0xFF2E5E73).copy(alpha = 0.35f),
-            disabledContentColor = Color.White.copy(alpha = 0.9f)
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+            disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
         )
-    ) { Text(text, fontWeight = FontWeight.SemiBold) }
+    ) {
+        Text(
+            text = text,
+            fontWeight = FontWeight.SemiBold
+        )
+    }
 }

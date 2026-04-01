@@ -12,15 +12,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.draw.*
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.*
-import kotlinx.coroutines.launch
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.velora.mobile.R
+import kotlinx.coroutines.launch
+
 private data class IntroPage(
     val title: String,
     val subtitle: String,
@@ -64,18 +67,21 @@ fun OnboardingScreen(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        Modifier
+                        modifier = Modifier
                             .size(28.dp)
                             .background(
                                 MaterialTheme.colorScheme.primary.copy(alpha = 0.20f),
                                 CircleShape
                             )
                     )
+
                     Spacer(Modifier.width(10.dp))
+
                     Text(
                         text = "Velora",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
 
@@ -85,7 +91,10 @@ fun OnboardingScreen(
                     onClick = onFinish,
                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                 ) {
-                    Text(stringResource(R.string.skip), color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f))
+                    Text(
+                        text = stringResource(R.string.skip),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                    )
                 }
             }
 
@@ -95,8 +104,8 @@ fun OnboardingScreen(
                 state = pager,
                 modifier = Modifier.weight(1f)
             ) { index ->
-                val p = pages[index]
-                OnboardingPageCard(page = p)
+                val page = pages[index]
+                OnboardingPageCard(page = page)
             }
 
             Spacer(Modifier.height(16.dp))
@@ -114,16 +123,23 @@ fun OnboardingScreen(
 
                 Button(
                     onClick = {
-                        if (pager.currentPage == pages.lastIndex) onFinish()
-                        else scope.launch { pager.animateScrollToPage(pager.currentPage + 1) }
+                        if (pager.currentPage == pages.lastIndex) {
+                            onFinish()
+                        } else {
+                            scope.launch {
+                                pager.animateScrollToPage(pager.currentPage + 1)
+                            }
+                        }
                     },
                     modifier = Modifier.height(54.dp),
                     shape = RoundedCornerShape(18.dp)
                 ) {
                     Text(
-                        text = if (pager.currentPage == pages.lastIndex) stringResource(R.string.get_started) else stringResource(
-                            R.string.next
-                        ),
+                        text = if (pager.currentPage == pages.lastIndex) {
+                            stringResource(R.string.get_started)
+                        } else {
+                            stringResource(R.string.next)
+                        },
                         fontWeight = FontWeight.SemiBold
                     )
                 }
@@ -136,7 +152,7 @@ fun OnboardingScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    stringResource(R.string.already_have_an_account),
+                    text = stringResource(R.string.already_have_an_account),
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f),
                     fontWeight = FontWeight.Medium
                 )
@@ -172,16 +188,20 @@ private fun OnboardingPageCard(page: IntroPage) {
         }
 
         Spacer(Modifier.height(14.dp))
+
         Text(
             text = page.title,
             style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onBackground
         )
+
         Spacer(Modifier.height(10.dp))
+
         Text(
             text = page.subtitle,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.70f),
             lineHeight = 22.sp
         )
 
@@ -198,19 +218,24 @@ private fun DotsIndicator(count: Int, index: Int) {
                 targetValue = if (selected) 18.dp else 8.dp,
                 label = "dotW"
             )
+
             Box(
-                Modifier
+                modifier = Modifier
                     .height(8.dp)
                     .width(w)
                     .clip(RoundedCornerShape(99.dp))
                     .background(
-                        if (selected) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.80f)
-                        else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.18f)
+                        if (selected) {
+                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.80f)
+                        } else {
+                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.18f)
+                        }
                     )
             )
         }
     }
 }
+
 @Composable
 private fun SoftOnboardingBackground(content: @Composable BoxScope.() -> Unit) {
     Box(
@@ -219,7 +244,7 @@ private fun SoftOnboardingBackground(content: @Composable BoxScope.() -> Unit) {
             .background(MaterialTheme.colorScheme.background)
     ) {
         Box(
-            Modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.radialGradient(
@@ -232,6 +257,7 @@ private fun SoftOnboardingBackground(content: @Composable BoxScope.() -> Unit) {
                     )
                 )
         )
+
         content()
     }
 }

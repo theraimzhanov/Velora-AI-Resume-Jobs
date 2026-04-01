@@ -9,14 +9,13 @@ import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import com.velora.mobile.R
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.velora.mobile.R
 
 @Composable
 fun RegisterScreen(
@@ -26,7 +25,6 @@ fun RegisterScreen(
     val ui by vm.ui.collectAsState()
     var error by remember { mutableStateOf<String?>(null) }
     var showPw by remember { mutableStateOf(false) }
-
     var name by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
@@ -37,13 +35,12 @@ fun RegisterScreen(
 
     AuthBackground {
         Column(
-            Modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 22.dp),
             verticalArrangement = Arrangement.Center
         ) {
             AuthCard(Modifier.fillMaxWidth()) {
-
                 Hero(R.drawable.register)
 
                 Spacer(Modifier.height(10.dp))
@@ -80,7 +77,10 @@ fun RegisterScreen(
                     leading = { Icon(Icons.Rounded.Lock, contentDescription = null) },
                     trailing = {
                         IconButton(onClick = { showPw = !showPw }) {
-                            Icon(if (showPw) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility, null)
+                            Icon(
+                                imageVector = if (showPw) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
+                                contentDescription = null
+                            )
                         }
                     },
                     visual = if (showPw) VisualTransformation.None else PasswordVisualTransformation()
@@ -88,7 +88,10 @@ fun RegisterScreen(
 
                 error?.let {
                     Spacer(Modifier.height(10.dp))
-                    Text(it, color = MaterialTheme.colorScheme.error)
+                    Text(
+                        text = it,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
 
                 Spacer(Modifier.height(14.dp))
@@ -107,7 +110,10 @@ fun RegisterScreen(
                     onClick = onGoLogin,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(stringResource(R.string.already_have), color = Color(0xFF2E5E73))
+                    Text(
+                        text = stringResource(R.string.already_have),
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
             }
         }

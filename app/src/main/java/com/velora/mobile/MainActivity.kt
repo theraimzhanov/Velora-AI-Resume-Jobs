@@ -25,16 +25,16 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        LocaleManager.ensureDefaultLanguage()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         setContent {
-            val languageCode = LocaleManager.currentLanguageCode()
             var showLocaleOverlay by remember { mutableStateOf(false) }
+            val languageCode = LocaleManager.currentLanguageCode()
 
             VeloraTheme {
                 Box(modifier = Modifier.fillMaxSize()) {
-
                     VeloraRoot(
                         selectedLanguageCode = languageCode,
                         onLanguageSelected = { code ->
