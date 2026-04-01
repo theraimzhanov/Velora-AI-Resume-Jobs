@@ -27,7 +27,6 @@ fun RegisterScreen(
     var error by remember { mutableStateOf<String?>(null) }
     var showPw by remember { mutableStateOf(false) }
 
-    // If you don’t have name in state, you can remove this field
     var name by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
@@ -56,7 +55,6 @@ fun RegisterScreen(
 
                 Spacer(Modifier.height(14.dp))
 
-                // Optional name field (remove if you don't want)
                 PillTextField(
                     value = name,
                     onValueChange = { name = it },

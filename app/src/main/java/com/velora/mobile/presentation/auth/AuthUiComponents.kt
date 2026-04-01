@@ -21,13 +21,11 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun AuthBackground(content: @Composable BoxScope.() -> Unit) {
-    // Light, soft background like the reference
     Box(
         Modifier
             .fillMaxSize()
             .background(Color(0xFFF4F4F4))
     ) {
-        // Big circle behind card
         Box(
             Modifier
                 .size(460.dp)
@@ -35,8 +33,6 @@ fun AuthBackground(content: @Composable BoxScope.() -> Unit) {
                 .offset(y = (-30).dp)
                 .background(Color(0xFF2E5E73).copy(alpha = 0.20f), CircleShape)
         )
-
-        // Small decorative dots (top-left & bottom-right)
         Box(
             Modifier
                 .size(14.dp)

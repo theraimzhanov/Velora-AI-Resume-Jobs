@@ -68,7 +68,7 @@
 
     <string name="target_role_optional">Желаемая должность (необязательно)</string>
     <string name="example_android_developer_intern">
-Пример: Android разработчик стажёр
+Пример: Андроид разработчик стажёр
 </string>
 
     <string name="answer_language_optional">Язык ответа (необязательно)</string>

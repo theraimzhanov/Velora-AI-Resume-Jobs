@@ -31,7 +31,6 @@ private data class IntroPage(
 fun OnboardingScreen(
     onFinish: () -> Unit
 ) {
-    // Keep your previous text (same idea, upgraded visuals)
     val pages = listOf(
         IntroPage(
             title = stringResource(R.string.intro1),
@@ -59,13 +58,11 @@ fun OnboardingScreen(
                 .fillMaxSize()
                 .padding(horizontal = 22.dp, vertical = 18.dp)
         ) {
-            // ===== Top bar (logo + Skip) =====
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // tiny mark placeholder (you can replace with your velora_mark)
                     Box(
                         Modifier
                             .size(28.dp)
@@ -94,7 +91,6 @@ fun OnboardingScreen(
 
             Spacer(Modifier.height(10.dp))
 
-            // ===== Pager =====
             HorizontalPager(
                 state = pager,
                 modifier = Modifier.weight(1f)
@@ -105,7 +101,6 @@ fun OnboardingScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // ===== Indicator + CTA =====
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -136,7 +131,6 @@ fun OnboardingScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            // ===== Bottom link =====
             TextButton(
                 onClick = onFinish,
                 modifier = Modifier.fillMaxWidth()
@@ -156,13 +150,11 @@ private fun OnboardingPageCard(page: IntroPage) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // ===== Hero illustration area =====
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(340.dp)
         ) {
-            // soft blob behind illustration (this is what makes it feel premium)
             SoftBlob(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -180,8 +172,6 @@ private fun OnboardingPageCard(page: IntroPage) {
         }
 
         Spacer(Modifier.height(14.dp))
-
-        // ===== Text like reference (big title + subtle text) =====
         Text(
             text = page.title,
             style = MaterialTheme.typography.headlineLarge,
@@ -221,10 +211,6 @@ private fun DotsIndicator(count: Int, index: Int) {
         }
     }
 }
-
-/**
- * Very subtle background like the reference.
- */
 @Composable
 private fun SoftOnboardingBackground(content: @Composable BoxScope.() -> Unit) {
     Box(
@@ -232,7 +218,6 @@ private fun SoftOnboardingBackground(content: @Composable BoxScope.() -> Unit) {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // subtle top gradient glow
         Box(
             Modifier
                 .fillMaxSize()
@@ -251,9 +236,6 @@ private fun SoftOnboardingBackground(content: @Composable BoxScope.() -> Unit) {
     }
 }
 
-/**
- * Minimal “orbital blob” decoration to mimic premium onboarding illustrations.
- */
 @Composable
 private fun SoftBlob(
     modifier: Modifier,

@@ -51,16 +51,6 @@ class ResumeViewModel @Inject constructor(
         }
     }
 
-    fun refreshLanguage() {
-        val code = LocaleManager.currentLanguageCode()
-        _ui.update {
-            it.copy(
-                appLanguageCode = code,
-                appLanguageName = languageNameFromCode(code)
-            )
-        }
-    }
-
     fun setJobTarget(v: String) {
         _ui.update { it.copy(jobTarget = v) }
     }
@@ -79,10 +69,6 @@ class ResumeViewModel @Inject constructor(
                 error = null
             )
         }
-    }
-
-    fun clearError() {
-        _ui.update { it.copy(error = null) }
     }
 
     fun analyze(contentResolver: ContentResolver) {
