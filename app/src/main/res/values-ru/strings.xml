@@ -47,7 +47,7 @@
     <string name="already_have_an_account">Уже есть аккаунт?</string>
     <string name="forgot_password">Забыли пароль?</string>
     <string name="enter_email">Введите email, и мы отправим ссылку для сброса пароля.</string>
-    <string name="email">Email</string>
+    <string name="email">Электронная почта</string>
     <string name="sending">Отправка...</string>
     <string name="send_reset_link">Отправить ссылку для сброса</string>
 

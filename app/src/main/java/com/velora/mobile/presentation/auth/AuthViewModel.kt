@@ -1,8 +1,10 @@
+
 package com.velora.mobile.presentation.auth
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.velora.mobile.core.UiEvents
 import com.velora.mobile.core.isValidEmail
 import com.velora.mobile.data.auth.GoogleIdTokenProvider
@@ -10,7 +12,12 @@ import com.velora.mobile.domain.auth.AuthRepository
 import com.velora.mobile.domain.auth.AuthState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class AuthUiState(
@@ -48,16 +55,67 @@ class AuthViewModel @Inject constructor(
 
     val events = UiEvents<AuthEvent>()
 
-    fun setEmail(v: String) = _ui.update { it.copy(email = v.trim()) }
-    fun setPassword(v: String) = _ui.update { it.copy(password = v) }
+    fun setEmail(value: String) {
+        _ui.update { it.copy(email = value.trim()) }
+    }
 
-    fun login() = runAuth { repo.login(ui.value.email.trim(), ui.value.password) }
-    fun register() = runAuth { repo.register(ui.value.email.trim(), ui.value.password) }
-    fun logout() = viewModelScope.launch { repo.logout() }
+    fun setPassword(value: String) {
+        _ui.update { it.copy(password = value) }
+    }
 
-    fun loginWithGoogle(context: Context) = runAuth {
-        val idToken = google.getIdToken(context)
-        repo.loginWithGoogleIdToken(idToken)
+    fun login() = runAuth {
+        repo.login(ui.value.email.trim(), ui.value.password)
+    }
+
+    fun register() = runAuth {
+        repo.register(ui.value.email.trim(), ui.value.password)
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            repo.logout()
+        }
+    }
+
+    fun loginWithGoogle(context: Context) {
+        viewModelScope.launch {
+            _ui.update { it.copy(loading = true) }
+
+            try {
+                val idToken = google.getIdToken(context)
+
+                when (authState.value) {
+                    is AuthState.SignedIn -> {
+                        try {
+                            repo.linkGoogleIdToken(idToken)
+                            events.send(AuthEvent.Success("Google account linked successfully"))
+                        } catch (e: FirebaseAuthUserCollisionException) {
+                            repo.loginWithGoogleIdToken(idToken)
+                        } catch (_: Exception) {
+                            events.send(AuthEvent.Error("Something went wrong, try again!"))
+                        }
+                    }
+
+                    else -> {
+                        try {
+                            repo.loginWithGoogleIdToken(idToken)
+                        } catch (_: FirebaseAuthUserCollisionException) {
+                            events.send(
+                                AuthEvent.Error(
+                                    "This email already uses password sign-in. Sign in with email first, then connect Google."
+                                )
+                            )
+                        } catch (_: Exception) {
+                            events.send(AuthEvent.Error("Something went wrong, try again!"))
+                        }
+                    }
+                }
+            } catch (_: Exception) {
+                events.send(AuthEvent.Error("Something went wrong, try again!"))
+            }
+
+            _ui.update { it.copy(loading = false) }
+        }
     }
 
     fun sendPasswordReset() {
@@ -77,8 +135,8 @@ class AuthViewModel @Inject constructor(
                 repo.sendPasswordReset(email)
             }.onSuccess {
                 events.send(AuthEvent.Success("Password reset email sent"))
-            }.onFailure { e ->
-                events.send(AuthEvent.Error(e.message ?: "Failed to send reset email"))
+            }.onFailure {
+                events.send(AuthEvent.Error("Something went wrong, try again!"))
             }
 
             _ui.update { it.copy(loading = false) }
@@ -89,11 +147,11 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _ui.update { it.copy(loading = true) }
 
-            runCatching { block() }
-                .onFailure { e ->
-                    val msg = e.message ?: "Authentication failed"
-                    events.send(AuthEvent.Error(msg))
-                }
+            runCatching {
+                block()
+            }.onFailure {
+                events.send(AuthEvent.Error("Something went wrong, try again!"))
+            }
 
             _ui.update { it.copy(loading = false) }
         }

@@ -1,12 +1,11 @@
 package com.velora.mobile.data.auth
 
-
 import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
-import com.velora.mobile.R
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.velora.mobile.R
 import javax.inject.Inject
 
 class GoogleIdTokenProvider @Inject constructor() {
@@ -28,8 +27,8 @@ class GoogleIdTokenProvider @Inject constructor() {
             request = request
         )
 
-        val cred = result.credential
-        val googleCred = GoogleIdTokenCredential.createFrom(cred.data)
-        return googleCred.idToken
+        val credential = result.credential
+        val googleCredential = GoogleIdTokenCredential.createFrom(credential.data)
+        return googleCredential.idToken
     }
 }

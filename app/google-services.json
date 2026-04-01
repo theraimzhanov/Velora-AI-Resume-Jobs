@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "164406289424-29aj405haok4nnvj5lcgareknojmu9cu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.velora.mobile",
+            "certificate_hash": "c69ffa025a927402c9526609f9f81205a3a8bf22"
+          }
+        },
+        {
           "client_id": "164406289424-0mpnehp1eiomdon6dtk5qdbas9d2h7ae.apps.googleusercontent.com",
           "client_type": 3
         }
