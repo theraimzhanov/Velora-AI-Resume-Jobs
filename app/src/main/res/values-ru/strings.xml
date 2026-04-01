@@ -56,7 +56,8 @@
     <string name="password">Пароль</string>
     <string name="signing_in">Вход...</string>
     <string name="sign_in">Войти</string>
-    <string name="google">Продолжить через Google</string>
+    <string name="or_continue_with">Или продолжить через</string>
+    <string name="continue_with_google">Продолжить с Google</string>
     <string name="don_t_have">Нет аккаунта? Зарегистрируйтесь</string>
     <string name="saved">Сохранено</string>
     <string name="your_job_search">Ваш поиск работы</string>

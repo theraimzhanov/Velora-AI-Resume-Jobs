@@ -33,7 +33,8 @@
     <string name="password">Password</string>
     <string name="signing_in">Signing in...</string>
     <string name="sign_in">Sign In</string>
-    <string name="google">Continue with Google</string>
+    <string name="or_continue_with">Or continue with</string>
+    <string name="continue_with_google">Continue with Google</string>
     <string name="don_t_have">Don’t have an account? Sign Up</string>
     <string name="register">Register</string>
     <string name="please_register_to_continue">Please register to continue.</string>

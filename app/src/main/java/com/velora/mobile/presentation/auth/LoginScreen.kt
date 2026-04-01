@@ -1,18 +1,28 @@
 package com.velora.mobile.presentation.auth
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -26,6 +36,8 @@ fun LoginScreen(
     vm: AuthViewModel = hiltViewModel()
 ) {
     val ui by vm.ui.collectAsState()
+    val context = LocalContext.current
+
     var error by remember { mutableStateOf<String?>(null) }
     var showPw by remember { mutableStateOf(false) }
 
@@ -42,6 +54,7 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 22.dp),
             verticalArrangement = Arrangement.Center
         ) {
@@ -74,12 +87,20 @@ fun LoginScreen(
                     trailing = {
                         IconButton(onClick = { showPw = !showPw }) {
                             Icon(
-                                imageVector = if (showPw) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
+                                imageVector = if (showPw) {
+                                    Icons.Rounded.VisibilityOff
+                                } else {
+                                    Icons.Rounded.Visibility
+                                },
                                 contentDescription = null
                             )
                         }
                     },
-                    visual = if (showPw) VisualTransformation.None else PasswordVisualTransformation()
+                    visual = if (showPw) {
+                        VisualTransformation.None
+                    } else {
+                        PasswordVisualTransformation()
+                    }
                 )
 
                 Spacer(Modifier.height(4.dp))
@@ -98,18 +119,40 @@ fun LoginScreen(
 
                 error?.let {
                     Spacer(Modifier.height(6.dp))
-                    Text(it, color = MaterialTheme.colorScheme.error)
+                    Text(
+                        text = it,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
 
                 Spacer(Modifier.height(10.dp))
 
                 PrimaryAuthButton(
-                    text = if (ui.loading) stringResource(R.string.signing_in) else stringResource(R.string.sign_in),
+                    text = if (ui.loading) {
+                        stringResource(R.string.signing_in)
+                    } else {
+                        stringResource(R.string.sign_in)
+                    },
                     enabled = ui.canSubmit
                 ) {
                     error = null
                     vm.login()
                 }
+
+                Spacer(Modifier.height(14.dp))
+
+                AuthDivider(text = stringResource(R.string.or_continue_with))
+
+                Spacer(Modifier.height(14.dp))
+
+                GoogleAuthButton(
+                    text = stringResource(R.string.continue_with_google),
+                    loading = ui.loading,
+                    onClick = {
+                        error = null
+                        vm.loginWithGoogle(context)
+                    }
+                )
 
                 Spacer(Modifier.height(10.dp))
 
@@ -124,5 +167,66 @@ fun LoginScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AuthDivider(text: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Divider(
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
+        )
+
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 12.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Divider(
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)
+        )
+    }
+}
+
+@Composable
+private fun GoogleAuthButton(
+    text: String,
+    loading: Boolean,
+    onClick: () -> Unit
+) {
+    OutlinedButton(
+        onClick = onClick,
+        enabled = !loading,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(999.dp)
+    ) {
+        if (loading) {
+            CircularProgressIndicator(
+                strokeWidth = 2.dp,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(Modifier.width(10.dp))
+        } else {
+           Icon(
+                painter = painterResource(id = R.drawable.google),
+                contentDescription = null,
+                tint = androidx.compose.ui.graphics.Color.Unspecified
+            )
+            Spacer(Modifier.width(10.dp))
+        }
+
+        Text(
+            text = text,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }

@@ -35,7 +35,8 @@
     <string name="password">Contraseña</string>
     <string name="signing_in">Iniciando sesión...</string>
     <string name="sign_in">Entrar</string>
-    <string name="google">Continuar con Google</string>
+    <string name="or_continue_with">O continuar con</string>
+    <string name="continue_with_google">Continuar con Google</string>
     <string name="don_t_have">¿No tienes una cuenta? Regístrate</string>
 
     <string name="register">Registrarse</string>
