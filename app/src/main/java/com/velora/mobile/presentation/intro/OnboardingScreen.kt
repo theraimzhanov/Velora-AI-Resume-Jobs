@@ -66,19 +66,17 @@ fun OnboardingScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
+                 /*   Box(
                         modifier = Modifier
                             .size(28.dp)
                             .background(
                                 MaterialTheme.colorScheme.primary.copy(alpha = 0.20f),
                                 CircleShape
                             )
-                    )
-
-                    Spacer(Modifier.width(10.dp))
+                    )*/
 
                     Text(
-                        text = "Velora",
+                        text = "Velora AI",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onBackground

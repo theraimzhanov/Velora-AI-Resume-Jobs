@@ -73,7 +73,7 @@ fun SplashScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Velora",
+                text = "Velora AI",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.SemiBold
             )

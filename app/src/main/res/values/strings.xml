@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Velora</string>
+    <string name="app_name">Velora AI</string>
     <string name="default_web_client_id">YOUR_WEB_CLIENT_ID_FROM_FIREBASE</string>
         <string name="settings">Settings</string>
     <string name="dark_mode">Dark Mode</string>
