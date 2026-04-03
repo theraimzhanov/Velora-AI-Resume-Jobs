@@ -76,7 +76,9 @@ https://play.google.com/store/apps/details?id=com.velora.mobile
 ```
 
 ### 2. Open in Android Studio
-
+```
+https://github.com/theraimzhanov/Velora-AI-Resume-Jobs.git
+```
 ### 3. Setup Firebase
 
 * Add your `google-services.json`
