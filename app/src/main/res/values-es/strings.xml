@@ -29,7 +29,15 @@
     <string name="email">Correo electrónico</string>
     <string name="sending">Enviando...</string>
     <string name="send_reset_link">Enviar enlace de restablecimiento</string>
-
+    <string name="policy">Política</string>
+    <string name="account">Cuenta</string>
+    <string name="privacy_policy">Política de privacidad</string>
+    <string name="open_privacy_policy">Abrir política de privacidad</string>
+    <string name="delete_account">Eliminar cuenta</string>
+    <string name="delete_account_subtitle">Eliminar permanentemente tu cuenta y tus datos</string>
+    <string name="delete_account_message">¿Estás seguro de que deseas eliminar permanentemente tu cuenta y todos los datos de seguimiento de empleos? Esta acción no se puede deshacer.</string>
+    <string name="delete">Eliminar</string>
+    <string name="cancel">Cancelar</string>
     <string name="login">Iniciar sesión</string>
     <string name="please_sign">Inicia sesión para continuar.</string>
     <string name="password">Contraseña</string>

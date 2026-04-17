@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DarkMode
+import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
@@ -46,13 +47,14 @@ import com.velora.mobile.presentation.ui.SoftCard
 @Composable
 fun SettingsScreen(
     selectedLanguageCode: String,
-    onLanguageSelected: (String) -> Unit
+    onLanguageSelected: (String) -> Unit,
+    onDeleteAccount: () -> Unit
 ) {
     val context = LocalContext.current
 
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
-    var showPrivacyDialog by remember { mutableStateOf(false) }
+    var showDeleteAccountDialog by remember { mutableStateOf(false) }
 
     val supportEmail = "raimjanovnursultan@gmail.com"
     val privacyPolicyUrl = "https://github.com/theraimzhanov/velora-privacy-policy"
@@ -116,40 +118,17 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             SoftCard(modifier = Modifier.fillMaxWidth()) {
-                Column {
-
-                    SettingClickableItem(
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Rounded.Info,
-                                contentDescription = null
-                            )
-                        },
-                        title = stringResource(R.string.about_velora),
-                        subtitle = stringResource(R.string.learn_more_about_velora),
-                        onClick = { showAboutDialog = true }
-                    )
-
-                    SettingClickableItem(
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Rounded.Info,
-                                contentDescription = null
-                            )
-                        },
-                        title = "Privacy Policy",
-                        subtitle = "Open privacy policy",
-                        onClick = {
-                            val intent = Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("https://github.com/theraimzhanov/velora-privacy-policy")
-                            )
-                            runCatching {
-                                context.startActivity(intent)
-                            }
-                        }
-                    )
-                }
+                SettingClickableItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Info,
+                            contentDescription = null
+                        )
+                    },
+                    title = stringResource(R.string.about_velora),
+                    subtitle = stringResource(R.string.learn_more_about_velora),
+                    onClick = { showAboutDialog = true }
+                )
             }
 
             Spacer(modifier = Modifier.height(18.dp))
@@ -185,6 +164,52 @@ fun SettingsScreen(
                 )
             }
 
+            Spacer(modifier = Modifier.height(18.dp))
+
+            SettingsSectionTitle(stringResource(R.string.policy))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            SoftCard(modifier = Modifier.fillMaxWidth()) {
+                SettingClickableItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Info,
+                            contentDescription = null
+                        )
+                    },
+                    title = stringResource(R.string.privacy_policy),
+                    subtitle = stringResource(R.string.open_privacy_policy),
+                    onClick = {
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse(privacyPolicyUrl)
+                        )
+                        runCatching {
+                            context.startActivity(intent)
+                        }
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            SettingsSectionTitle(stringResource(R.string.account))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            SoftCard(modifier = Modifier.fillMaxWidth()) {
+                SettingClickableItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.DeleteForever,
+                            contentDescription = null
+                        )
+                    },
+                    title = stringResource(R.string.delete_account),
+                    subtitle = stringResource(R.string.delete_account_subtitle),
+                    onClick = { showDeleteAccountDialog = true }
+                )
+            }
+
             Spacer(modifier = Modifier.height(20.dp))
         }
 
@@ -205,17 +230,12 @@ fun SettingsScreen(
             )
         }
 
-        if (showPrivacyDialog) {
-            PrivacyPolicyDialog(
-                onDismiss = { showPrivacyDialog = false },
-                onOpenLink = {
-                    val intent = Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse(privacyPolicyUrl)
-                    )
-                    runCatching {
-                        context.startActivity(intent)
-                    }
+        if (showDeleteAccountDialog) {
+            DeleteAccountDialog(
+                onDismiss = { showDeleteAccountDialog = false },
+                onConfirmDelete = {
+                    showDeleteAccountDialog = false
+                    onDeleteAccount()
                 }
             )
         }
@@ -430,35 +450,27 @@ private fun AboutDialog(
 }
 
 @Composable
-private fun PrivacyPolicyDialog(
+private fun DeleteAccountDialog(
     onDismiss: () -> Unit,
-    onOpenLink: () -> Unit
+    onConfirmDelete: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        confirmButton = {
-            Row {
-                TextButton(onClick = onOpenLink) {
-                    Text("Open Link")
-                }
-                TextButton(onClick = onDismiss) {
-                    Text("Close")
-                }
-            }
-        },
         title = {
-            Text("Privacy Policy")
+            Text(stringResource(R.string.delete_account))
         },
         text = {
-            Text(
-                text =
-                    "Velora AI respects your privacy. We collect limited data such as your email, resume files, and app usage information to provide job tracking and AI resume analysis features.\n\n" +
-                            "Your data is securely stored using Firebase services.\n\n" +
-                            "We may use Google Firebase and AI services to improve functionality.\n\n" +
-                            "You can request account and data deletion at any time by contacting:\n" +
-                            "raimjanovnursultan@gmail.com\n\n" +
-                            "By using Velora AI, you agree to this Privacy Policy."
-            )
+            Text(stringResource(R.string.delete_account_message))
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirmDelete) {
+                Text(stringResource(R.string.delete))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
         }
     )
 }

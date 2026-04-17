@@ -13,4 +13,6 @@ interface AuthRepository {
     suspend fun linkGoogleIdToken(idToken: String)
 
     suspend fun sendPasswordReset(email: String)
+
+    suspend fun deleteAccount()
 }

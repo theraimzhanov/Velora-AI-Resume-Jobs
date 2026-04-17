@@ -165,8 +165,8 @@ fun VeloraNavHost(
                     authState = authState,
                     selectedLanguageCode = selectedLanguageCode,
                     onLanguageSelected = onLanguageSelected,
-
-                    onLogout = { authVm.logout() }
+                    onLogout = { authVm.logout() },
+                    onDeleteAccount = { authVm.deleteAccount() }
                 )
             }
         }

@@ -55,7 +55,8 @@ fun AppScaffold(
     authState: AuthState,
     selectedLanguageCode: String,
     onLanguageSelected: (String) -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onDeleteAccount: () -> Unit
 ) {
     val nav = rememberNavController()
     var menuExpanded by remember { mutableStateOf(false) }
@@ -232,7 +233,8 @@ fun AppScaffold(
             composable(Destinations.SETTINGS) {
                 SettingsScreen(
                     selectedLanguageCode = selectedLanguageCode,
-                    onLanguageSelected = onLanguageSelected
+                    onLanguageSelected = onLanguageSelected,
+                    onDeleteAccount  = onDeleteAccount
                 )
             }
         }

@@ -76,7 +76,6 @@ class AuthViewModel @Inject constructor(
             repo.logout()
         }
     }
-
     fun loginWithGoogle(context: Context) {
         viewModelScope.launch {
             _ui.update { it.copy(loading = true) }
@@ -151,6 +150,22 @@ class AuthViewModel @Inject constructor(
                 block()
             }.onFailure {
                 events.send(AuthEvent.Error("Something went wrong, try again!"))
+            }
+
+            _ui.update { it.copy(loading = false) }
+        }
+    }
+    fun deleteAccount() {
+        viewModelScope.launch {
+            _ui.update { it.copy(loading = true) }
+
+            runCatching {
+                repo.deleteAccount()
+                repo.logout()
+            }.onSuccess {
+                events.send(AuthEvent.Success("Account deleted"))
+            }.onFailure {
+                events.send(AuthEvent.Error("Could not delete account"))
             }
 
             _ui.update { it.copy(loading = false) }

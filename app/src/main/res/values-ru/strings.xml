@@ -23,6 +23,15 @@
     <string name="applied">Отправлено</string>
     <string name="interview">Собеседование</string>
     <string name="offer">Оффер</string>
+    <string name="policy">Политика</string>
+    <string name="account">Аккаунт</string>
+    <string name="privacy_policy">Политика конфиденциальности</string>
+    <string name="open_privacy_policy">Открыть политику конфиденциальности</string>
+    <string name="delete_account">Удалить аккаунт</string>
+    <string name="delete_account_subtitle">Навсегда удалить аккаунт и данные</string>
+    <string name="delete_account_message">Вы уверены, что хотите навсегда удалить свой аккаунт и все данные отслеживания вакансий? Это действие нельзя отменить.</string>
+    <string name="delete">Удалить</string>
+    <string name="cancel">Отмена</string>
     <string name="rejected">Отклонено</string>
     <string name="no_internet_connection">Нет подключения к интернету</string>
     <string name="connection">Velora требуется подключение к интернету для загрузки ваших заявок, проверки резюме и данных аккаунта.</string>

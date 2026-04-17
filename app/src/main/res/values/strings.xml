@@ -26,6 +26,15 @@
     <string name="forgot_password">Forgot Password</string>
     <string name="enter_email">Enter your email and we’ll send you a reset link.</string>
     <string name="email">Email</string>
+    <string name="policy">Policy</string>
+    <string name="account">Account</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="open_privacy_policy">Open privacy policy</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_account_subtitle">Permanently remove your account and data</string>
+    <string name="delete_account_message">Are you sure you want to permanently delete your account and all job tracking data? This action cannot be undone.</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
     <string name="sending">Sending...</string>
     <string name="send_reset_link">Send reset link</string>
     <string name="login">Login</string>

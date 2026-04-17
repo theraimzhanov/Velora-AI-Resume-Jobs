@@ -2,6 +2,7 @@ package com.velora.mobile.data.auth
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import com.velora.mobile.domain.auth.AuthRepository
 import com.velora.mobile.domain.auth.AuthState
 import kotlinx.coroutines.channels.awaitClose
@@ -11,7 +12,8 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FirebaseAuthRepositoryImpl @Inject constructor(
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val db: FirebaseFirestore
 ) : AuthRepository {
 
     override val authState: Flow<AuthState> = callbackFlow {
@@ -55,5 +57,20 @@ class FirebaseAuthRepositoryImpl @Inject constructor(
 
     override suspend fun sendPasswordReset(email: String) {
         auth.sendPasswordResetEmail(email.trim()).await()
+    }
+
+    override suspend fun deleteAccount() {
+        val user = auth.currentUser ?: error("No signed-in user")
+        val uid = user.uid
+
+        val userDoc = db.collection("users").document(uid)
+        val applications = userDoc.collection("applications").get().await()
+
+        for (doc in applications.documents) {
+            doc.reference.delete().await()
+        }
+
+        userDoc.delete().await()
+        user.delete().await()
     }
 }
