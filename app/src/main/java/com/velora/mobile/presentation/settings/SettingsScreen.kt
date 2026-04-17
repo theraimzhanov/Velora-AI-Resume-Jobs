@@ -21,7 +21,6 @@ import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Language
-import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -53,8 +52,10 @@ fun SettingsScreen(
 
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
+    var showPrivacyDialog by remember { mutableStateOf(false) }
 
     val supportEmail = "raimjanovnursultan@gmail.com"
+    val privacyPolicyUrl = "https://github.com/theraimzhanov/velora-privacy-policy"
 
     val currentLanguageText = when (selectedLanguageCode) {
         "ru" -> "Русский"
@@ -115,17 +116,40 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             SoftCard(modifier = Modifier.fillMaxWidth()) {
-                SettingClickableItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Info,
-                            contentDescription = null
-                        )
-                    },
-                    title = stringResource(R.string.about_velora),
-                    subtitle = stringResource(R.string.learn_more_about_velora),
-                    onClick = { showAboutDialog = true }
-                )
+                Column {
+
+                    SettingClickableItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Rounded.Info,
+                                contentDescription = null
+                            )
+                        },
+                        title = stringResource(R.string.about_velora),
+                        subtitle = stringResource(R.string.learn_more_about_velora),
+                        onClick = { showAboutDialog = true }
+                    )
+
+                    SettingClickableItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Rounded.Info,
+                                contentDescription = null
+                            )
+                        },
+                        title = "Privacy Policy",
+                        subtitle = "Open privacy policy",
+                        onClick = {
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://github.com/theraimzhanov/velora-privacy-policy")
+                            )
+                            runCatching {
+                                context.startActivity(intent)
+                            }
+                        }
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(18.dp))
@@ -178,6 +202,21 @@ fun SettingsScreen(
         if (showAboutDialog) {
             AboutDialog(
                 onDismiss = { showAboutDialog = false }
+            )
+        }
+
+        if (showPrivacyDialog) {
+            PrivacyPolicyDialog(
+                onDismiss = { showPrivacyDialog = false },
+                onOpenLink = {
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(privacyPolicyUrl)
+                    )
+                    runCatching {
+                        context.startActivity(intent)
+                    }
+                }
             )
         }
     }
@@ -385,6 +424,40 @@ private fun AboutDialog(
         text = {
             Text(
                 text = stringResource(R.string.info_app)
+            )
+        }
+    )
+}
+
+@Composable
+private fun PrivacyPolicyDialog(
+    onDismiss: () -> Unit,
+    onOpenLink: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Row {
+                TextButton(onClick = onOpenLink) {
+                    Text("Open Link")
+                }
+                TextButton(onClick = onDismiss) {
+                    Text("Close")
+                }
+            }
+        },
+        title = {
+            Text("Privacy Policy")
+        },
+        text = {
+            Text(
+                text =
+                    "Velora AI respects your privacy. We collect limited data such as your email, resume files, and app usage information to provide job tracking and AI resume analysis features.\n\n" +
+                            "Your data is securely stored using Firebase services.\n\n" +
+                            "We may use Google Firebase and AI services to improve functionality.\n\n" +
+                            "You can request account and data deletion at any time by contacting:\n" +
+                            "raimjanovnursultan@gmail.com\n\n" +
+                            "By using Velora AI, you agree to this Privacy Policy."
             )
         }
     )

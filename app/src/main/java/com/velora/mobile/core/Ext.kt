@@ -11,4 +11,5 @@ class UiEvents<E> {
     private val channel = Channel<E>(capacity = Channel.BUFFERED)
     val flow = channel.receiveAsFlow()
     suspend fun send(event: E) = channel.send(event)
+
 }

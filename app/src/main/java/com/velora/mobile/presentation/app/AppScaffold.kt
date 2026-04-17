@@ -85,7 +85,7 @@ fun AppScaffold(
     val showBackButton = !isTopLevelDestination
 
     val topBarTitle = when (currentRoute) {
-        Destinations.TRACKER -> "Velora"
+        Destinations.TRACKER -> "Velora AI"
         Destinations.RESUME -> stringResource(R.string.resume_checker)
         Destinations.SETTINGS -> stringResource(R.string.settings)
         else -> "Velora"
